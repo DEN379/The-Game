@@ -3,6 +3,6 @@
     public class ItemWithKey<T>
     {
         public int Id { get; set; }
-        public T item { get; set; }
+        public T Item { get; set; }
     }
 }

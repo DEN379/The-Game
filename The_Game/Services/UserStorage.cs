@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Linq;
 using The_Game.Classes;
+using The_Game.Models;
 
 namespace The_Game.Services
 {
@@ -10,12 +11,12 @@ namespace The_Game.Services
         public UserStorage()
         {
 
-            _dbPlayRooms = _jsonReader.ReadList("Users.json").Result ?? new ConcurrentDictionary<int, User>();
+            DataBase = _jsonReader.ReadList("Users.json").Result ?? new ConcurrentDictionary<int, User>();
         }
 
         public bool FindUser(User user)
         {
-            var find = _dbPlayRooms.Select(x => x.Value).FirstOrDefault(x => x.Login == user.Login);
+            var find = DataBase.Select(x => x.Value).FirstOrDefault(x => x.Login == user.Login);
             return find != null;
         }
 
