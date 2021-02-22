@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using The_Game.Classes;
 using The_Game.Interfaces;
+using The_Game.Services;
 
 namespace The_Game
 {
@@ -25,7 +26,8 @@ namespace The_Game
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddSingleton<List<User>>();
+            services.AddSingleton<RoomStorage>();
+            services.AddSingleton<UserStorage>();
             services.AddControllers();
         }
         
