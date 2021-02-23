@@ -51,7 +51,6 @@ namespace The_Game_Client.Utility
             do
             {
                 Clear();
-                //if (isScene) WriteLine(scene.PrintScene());
                 DisplayOptions();
 
                 ConsoleKeyInfo info = ReadKey(true);
