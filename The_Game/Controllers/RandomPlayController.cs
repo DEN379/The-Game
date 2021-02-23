@@ -118,8 +118,15 @@ namespace The_Game.Controllers
             {
                 return NotFound();
             }
-            GameProcess game = new GameProcess(room.FirstPlayer,room.FirstPlayer);
-            return  await game.PlayersPlay();
+            var game = new GameProcess(room.FirstPlayer,room.FirstPlayer);
+            var winner = await game.PlayersPlay();
+            if (winner.Value == "Exit")
+            {
+                SessionPlayRooms.TryRemove(linkOfGuid, out _);
+                return BadRequest();
+            }
+
+            return winner;
         }
     }
 }
