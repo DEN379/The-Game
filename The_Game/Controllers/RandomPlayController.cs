@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using The_Game.Models;
 using The_Game.Services;
@@ -59,33 +60,34 @@ namespace The_Game.Controllers
             }
         }
 
-        [HttpPost("{linkOfGuid}/{loginPlayer}")]
-        public ActionResult PlayGame(Guid linkOfGuid,string loginPlayer, Figures figure)
+        [HttpPost("{linkOfGuid}")]
+        public async Task<ActionResult<string>> PlayGameAsync(Guid linkOfGuid,Player player)
         {
+            var game = new GameProcess();
             var room = Session.Select(x => x).FirstOrDefault(x => x.Key == linkOfGuid).Value;
             bool notStarted = true;
-            Figures? figureFirstPlayer = null;
-            Figures? figureSecondPlayer = null;
+            Player firstPlayer = null;
+            Player secondPlayer = null;
             while (notStarted)
             {
-                if (figureSecondPlayer != null && figureFirstPlayer != null)
+                if (firstPlayer != null && secondPlayer != null)
                 {
-                    notStarted = false;
+                    break;
                 }
 
-                if (loginPlayer == room.Player1)
+                if (player.Login == room.Player1)
                 {
-                    figureFirstPlayer = figure;
+                    firstPlayer = player;
                 }
                 else
                 {
-                    figureSecondPlayer = figure;
+                    secondPlayer = player;
                 }
-
-                
             }
 
-            return Ok();
+            var winner = await game.PlayersPlay(firstPlayer, secondPlayer);
+
+            return winner;
 
         }
     }
