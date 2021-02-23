@@ -16,6 +16,9 @@ namespace The_Game.Controllers
         private readonly RoomStorage _rooms;
         private readonly ILogger _logger;
         private static readonly ConcurrentDictionary<Guid, Room> Session = new ConcurrentDictionary<Guid, Room>();
+        private static readonly ConcurrentDictionary<Guid,PlayRoom> PlayRooms= new ConcurrentDictionary<Guid, PlayRoom>();
+        private static readonly ConcurrentDictionary<Guid, PlayRoom> SessionPlayRooms = new ConcurrentDictionary<Guid, PlayRoom>();
+
         public RandomPlayController(RoomStorage rooms, ILogger<RandomPlayController> logger)
         {
             _rooms = rooms;
@@ -61,34 +64,62 @@ namespace The_Game.Controllers
         }
 
         [HttpPost("{linkOfGuid}")]
-        public async Task<ActionResult<string>> PlayGameAsync(Guid linkOfGuid,Player player)
+        public async Task<IActionResult> PlayGameAsync(Guid linkOfGuid,Player player)
         {
-            var game = new GameProcess();
-            var room = Session.Select(x => x).FirstOrDefault(x => x.Key == linkOfGuid).Value;
-            bool notStarted = true;
-            Player firstPlayer = null;
-            Player secondPlayer = null;
-            while (notStarted)
-            {
-                if (firstPlayer != null && secondPlayer != null)
-                {
-                    break;
-                }
 
-                if (player.Login == room.Player1)
+            var room = PlayRooms.Select(x => x).FirstOrDefault(x => x.Key == linkOfGuid).Value;
+            if (room== null)
+            {
+                var newPlayRoom = new PlayRoom()
                 {
-                    firstPlayer = player;
-                }
-                else
-                {
-                    secondPlayer = player;
-                }
+                    FirstPlayer = player,
+                    SecondPlayer = null
+                };
+                PlayRooms.TryAdd(linkOfGuid,newPlayRoom);
+                return Ok();
             }
 
-            var winner = await game.PlayersPlay(firstPlayer, secondPlayer);
+            room.SecondPlayer = player;
+            PlayRooms.TryRemove(linkOfGuid,out _);
+            SessionPlayRooms.TryAdd(linkOfGuid, room);
+            return Ok();
 
-            return winner;
+            #region NonWorkWariant
 
+            //bool notStarted = true;
+            //Player firstPlayer = null;
+            //Player secondPlayer = null;
+            //while (true)
+            //{
+            //    if (firstPlayer != null && secondPlayer != null)
+            //    {
+            //        break;
+            //    }
+
+            //    if (player.Login == room.Player1)
+            //    {
+            //        firstPlayer = player;
+            //    }
+            //    else
+            //    {
+            //        secondPlayer = player;
+            //    }
+            //}
+
+            //var winner = await game.PlayersPlay(firstPlayer, secondPlayer);
+
+            #endregion
+        }
+        [HttpGet("game/{linkOfGuid}")]
+        public async Task<ActionResult<string>> WaitingEnemy(Guid linkOfGuid)
+        {
+            var room = SessionPlayRooms.Select(x => x).FirstOrDefault(x => x.Key == linkOfGuid).Value;
+            if (room == null)
+            {
+                return NotFound();
+            }
+            GameProcess game = new GameProcess(room.FirstPlayer,room.FirstPlayer);
+            return  await game.PlayersPlay();
         }
     }
 }
