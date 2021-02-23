@@ -2,29 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using The_Game.Classes;
 
-namespace The_Game.Services
+namespace The_Game.Models
 {
-    public class ItemWithKey<T> 
+    public abstract class Storage<T> : IStorage<T> where T:class 
     {
-        public int Id { get; set; }
-        public T item { get; set; }
-
-    }
-    public abstract class Storage<T> where T:class
-    {
-        protected  ConcurrentDictionary<int, T> _dbPlayRooms = new ConcurrentDictionary<int, T>();
+        protected  ConcurrentDictionary<int, T> DataBase = new ConcurrentDictionary<int, T>();
 
         
         public async Task<IEnumerable<ItemWithKey<T>>> GetAll()
         {
-            return _dbPlayRooms.Select(x => new ItemWithKey<T> {Id = x.Key, item = x.Value}).ToArray();
+            return DataBase.Select(x => new ItemWithKey<T> {Id = x.Key, Item = x.Value}).ToArray();
         }
 
         public ConcurrentDictionary<int, T> GetDictionary()
         {
-            return _dbPlayRooms;
+            return DataBase;
         }
         public async Task<IEnumerable<ItemWithKey<T>>> GetAllAsync()
         {
@@ -33,7 +26,7 @@ namespace The_Game.Services
 
         public async Task<T> Get(int key)
         {
-            return _dbPlayRooms.TryGetValue(key, out var item) ? item : default;
+            return DataBase.TryGetValue(key, out var item) ? item : default;
         }
 
         public async Task<T> GetAsync(int key)
@@ -42,8 +35,8 @@ namespace The_Game.Services
         }
         public int Add(T item)
         {
-            var id = _dbPlayRooms.Keys.Any() ? _dbPlayRooms.Keys.Max() + 1 : 1;
-            _dbPlayRooms.TryAdd(id,item);
+            var id = DataBase.Keys.Any() ? DataBase.Keys.Max() + 1 : 1;
+            DataBase.TryAdd(id,item);
             return id;
         }
 
@@ -54,7 +47,7 @@ namespace The_Game.Services
 
         public void AddOrUpdate(int id, T item)
         {
-            _dbPlayRooms[id] = item;
+            DataBase[id] = item;
         }
 
         public Task AddOrUpdateAsync(int key, T item)
@@ -65,7 +58,7 @@ namespace The_Game.Services
 
         public bool Delete(int key)
         {
-            return _dbPlayRooms.TryRemove(key,out _);
+            return DataBase.TryRemove(key,out _);
         }
 
         public Task<bool> DeleteAsync(int key)

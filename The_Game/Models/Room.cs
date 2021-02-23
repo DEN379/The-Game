@@ -9,8 +9,8 @@ namespace The_Game.Models
     public class Room
     {
         public Guid Guid { get; set; }
-        public User Player1 { get; set; }
-        public User Player2 { get; set; }
+        public string Player1 { get; set; }
+        public string Player2 { get; set; }
 
     }
 }

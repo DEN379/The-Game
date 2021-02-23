@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Channels;
@@ -28,6 +29,7 @@ namespace The_Game
         {
             services.AddSingleton<RoomStorage>();
             services.AddSingleton<UserStorage>();
+            services.AddSingleton<ConcurrentQueue<Guid>>();
             services.AddControllers();
         }
         
