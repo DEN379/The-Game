@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
 using The_Game.Models;
@@ -7,54 +9,71 @@ namespace The_Game.Services
 {
     public class GameProcess
     {
-        public  async Task<string> PlayersPlay(Player player1, Player player2 )
+        private readonly Player _player1;
+        private readonly Player _player2;
+
+        public GameProcess(Player player1,Player player2)
         {
-            if (player1.Figure == player2.Figure)
+            _player1 = player1;
+            _player2 = player2;
+        }
+        
+        public  async Task<ActionResult<string>> PlayersPlay()
+        {
+            if (_player1.Command == Commands.Exit || _player2.Command == Commands.Exit)
+            {
+                return "Exit";
+            }
+            if (_player1.Command == _player2.Command)
             {
                 return "Draw";
             } 
             
-            var winner = await WinCondition(player1.Figure, player2.Figure);
-            return player1.Figure == winner ? player1.Login : player2.Login;
+            var winner = await WinCondition(_player1.Command, _player2.Command);
+            return _player1.Command == winner ? _player1.Login : _player2.Login;
         }
 
-        private async Task<Figures?> WinCondition(Figures figure, Figures figure2)
+        private async Task<Commands?> WinCondition(Commands command, Commands command2)
         {
-            if (figure == figure2)
+            if (command == command2)
             {
-                return figure;
+                return command;
             }
 
-            switch (figure)
+            switch (command)
             {
-                case Figures.Scissors:
-                    switch (figure2)
+                case Commands.Scissors:
+                    switch (command2)
                     {
-                        case Figures.Stone:
-                            return Figures.Stone;
-                        case Figures.Paper:
-                            return Figures.Scissors;
+                        case Commands.Stone:
+                            return Commands.Stone;
+                        case Commands.Paper:
+                            return Commands.Scissors;
                     }
 
                     break;
-                case Figures.Stone:
-                    switch (figure2)
+                case Commands.Stone:
+                    switch (command2)
                     {
-                        case Figures.Scissors:
-                            return Figures.Stone;
-                        case Figures.Paper:
-                            return Figures.Paper;
+                        case Commands.Scissors:
+                            return Commands.Stone;
+                        case Commands.Paper:
+                            return Commands.Paper;
                     }
+
                     break;
-                case Figures.Paper:
-                    switch (figure2)
+                case Commands.Paper:
+                    switch (command2)
                     {
-                        case Figures.Stone:
-                            return Figures.Paper;
-                        case Figures.Scissors:
-                            return Figures.Scissors;
+                        case Commands.Stone:
+                            return Commands.Paper;
+                        case Commands.Scissors:
+                            return Commands.Scissors;
                     }
+
                     break;
+
+                    
             }
 
             return null;

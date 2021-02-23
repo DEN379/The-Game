@@ -4,7 +4,7 @@ namespace The_Game.Models
 {
     public class Player:User
     {
-        public Figures Figure { get; set; }
+        public Commands Command { get; set; }
 
     }
 }
