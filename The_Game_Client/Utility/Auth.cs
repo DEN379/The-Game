@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,9 @@ namespace The_Game_Client.Utility
 {
     class Auth
     {
+        public int CountOfBadLogin { get; set; } = 0;
+        public string Guid { get; set; }
+
         private HttpClient client;
 
         public Auth(HttpClient client)
@@ -18,11 +22,54 @@ namespace The_Game_Client.Utility
         }
         
 
-        public async Task PostAsync(string request, User user)
+        public async Task<bool> PostAsync(string request, User user)
         {
             var userObj = JsonConvert.SerializeObject(user);
             var content = new StringContent(userObj, Encoding.UTF8, "application/json");
-            await client.PostAsync(request, content);
+            var response = await client.PostAsync(request, content);
+
+            if(response.StatusCode == HttpStatusCode.BadRequest)
+            {
+                CountOfBadLogin++;
+            }
+            else if (response.StatusCode == HttpStatusCode.OK)
+            {
+                CountOfBadLogin = 0;
+                return true;
+            }
+            return false;
         }
+
+        public async Task<bool> GetAsync(string request)
+        {
+            var response = await client.GetAsync(request);
+
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var guid = content.Trim('"');
+                await FindRoomAsync(guid);
+                return true;
+            }
+            return false;
+        }
+
+        public async Task FindRoomAsync(string guid)
+        {
+            while (true)
+            {
+                var responseToStart = await client.GetAsync($"/api/RandomPlay/{guid}");
+                
+                if (responseToStart.StatusCode == HttpStatusCode.OK) { Console.WriteLine("Es"); break; }
+                await Task.Delay(2000);
+            }
+        }
+
+        //public async Task PostFigureAsync(Figure)
+        //{
+        //    var userObj = JsonConvert.SerializeObject(user);
+        //    var content = new StringContent(userObj, Encoding.UTF8, "application/json");
+        //    var response = await client.PostAsync(request, content);
+        //}
     }
 }
