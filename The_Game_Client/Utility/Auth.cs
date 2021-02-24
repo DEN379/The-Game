@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using The_Game.Models;
 using The_Game_Client.Model;
 
 namespace The_Game_Client.Utility
@@ -13,6 +14,8 @@ namespace The_Game_Client.Utility
     {
         public int CountOfBadLogin { get; set; } = 0;
         public string Guid { get; set; }
+
+        public User User { get; set; }
 
         private HttpClient client;
 
@@ -48,6 +51,7 @@ namespace The_Game_Client.Utility
             {
                 var content = await response.Content.ReadAsStringAsync();
                 var guid = content.Trim('"');
+                Guid = guid;
                 await FindRoomAsync(guid);
                 return true;
             }
@@ -65,11 +69,53 @@ namespace The_Game_Client.Utility
             }
         }
 
-        //public async Task PostFigureAsync(Figure)
-        //{
-        //    var userObj = JsonConvert.SerializeObject(user);
-        //    var content = new StringContent(userObj, Encoding.UTF8, "application/json");
-        //    var response = await client.PostAsync(request, content);
-        //}
+        public async Task<bool> PostFigureAsync(Commands commands)
+        {
+
+            var player = new Player()
+            {
+                Login = User.Login,
+                Password = User.Password,
+                Command = commands
+            };
+            var content = new StringContent(JsonConvert.SerializeObject(player), Encoding.UTF8, "application/json");
+            var responseForGame = await client.PostAsync($"/api/RandomPlay/{Guid}", content);
+            Console.WriteLine(player.Command);
+            Console.WriteLine(Guid);
+            Console.WriteLine(responseForGame.StatusCode);
+            while (true)
+            {
+                var responseToStart = await client.GetAsync($"/api/RandomPlay/game/{Guid}");
+                if (responseToStart.StatusCode == HttpStatusCode.OK)
+                {
+                    var result = await responseToStart.Content.ReadAsStringAsync();
+                    Console.WriteLine("rez "+result);
+                    if (result.Equals("Draw"))
+                    {
+                        Console.WriteLine("Draw");
+                        Console.ReadKey();
+                        return true;
+                    }
+                    else if (result.Equals("Exit")) return false;
+                    else if (result.Equals(User.Login))
+                    {
+                        Console.WriteLine("You won!");
+                        Console.ReadKey();
+                        return true;
+                    }
+                    else
+                    {
+                        Console.WriteLine("You loose :(");
+                        Console.ReadKey();
+                        return true;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine(responseToStart.StatusCode);
+                }
+
+            }
+        }
     }
 }
