@@ -4,7 +4,7 @@ using System.Text;
 
 namespace The_Game_Client.Model
 {
-    class User
+    public class User
     {
         public string Login { get; set; }
         public string Password { get; set; }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -15,7 +16,7 @@ namespace The_Game_Client.Utility
         private Menu menu;
         private HttpClient client;
         private Auth auth;
-        private User user;
+        public static User User { get; private set; }
         private Timer timer = new Timer(5000);
 
         public GameMenu()
@@ -78,6 +79,9 @@ namespace The_Game_Client.Utility
             Menu gameMenu = new Menu(logo, options);
             int selected = gameMenu.Run();
 
+            //Stopwatch stopWatch = new Stopwatch();
+            //stopWatch.Start();
+
             switch (selected)
             {
                 case 0:
@@ -99,7 +103,9 @@ namespace The_Game_Client.Utility
             }
 
 
-
+            //stopWatch.Stop();
+            //TimeSpan ts = stopWatch.Elapsed;
+            
             await RunGameMenuAsync();
         }
 
@@ -125,7 +131,8 @@ namespace The_Game_Client.Utility
 
             if (isSuccess)
             {
-                this.user = user;
+                User = user;
+                auth.User = user;
                 await RunGameMenuAsync();
             }
 
@@ -158,15 +165,38 @@ namespace The_Game_Client.Utility
 
         public async Task RandomGameAsync()
         {
-            if(await auth.GetAsync($"/api/RandomPlay/create/{user.Login}"))
+            bool running = true;
+            if(await auth.GetAsync($"/api/RandomPlay/create/{User.Login}"))
             {
+                string logo = "Choose a figure => ";
+                string[] options = new string[] { "Rock", "Scissors", "Paper", "Exit" };
+                Menu randomGameMenu = new Menu(logo, options);
 
+                Commands command = Commands.Exit;
+                while (running)
+                {
+                    int result = randomGameMenu.Run();
+                    Console.WriteLine(result);
+                    switch (result)
+                    {
+                        case 0: command = Commands.Stone;
+                            break;
+                        case 1: command = Commands.Scissors;
+                            break;
+                        case 2: command = Commands.Paper;
+                            break;
+                        default: command = Commands.Exit;
+                            break;
+                    }
+                    running = await auth.PostFigureAsync(command);
+                }
             }
         }
 
         //public async Task TheGame()
         //{
 
+            
         //}
 
         public async Task ReturnToMainMenuAsync()
