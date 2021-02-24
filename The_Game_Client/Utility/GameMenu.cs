@@ -55,7 +55,7 @@ namespace The_Game_Client.Utility
                     await RegisterAsync(auth);
                     break;
                 case 2:
-                    Environment.Exit(1);
+                    return;
                     break;
             }
 
@@ -189,6 +189,7 @@ namespace The_Game_Client.Utility
                             break;
                     }
                     running = await auth.PostFigureAsync(command);
+                    
                 }
             }
         }

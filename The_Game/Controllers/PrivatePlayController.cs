@@ -4,6 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using The_Game.Models;
@@ -44,7 +45,7 @@ namespace The_Game.Controllers
                 
 
         }
-
+        
         [HttpGet("{login}/{linkOfGuid}")]
         public async Task<IActionResult> WaitingLobby(string login,Guid linkOfGuid)
         {
@@ -76,7 +77,7 @@ namespace The_Game.Controllers
         [HttpPost("{linkOfGuid}")]
         public async Task<IActionResult> PlayGameAsync(Guid linkOfGuid, Player player)
         {
-
+            SessionPlayRooms.TryRemove(linkOfGuid, out _);
             var room = PlayRooms.Select(x => x).FirstOrDefault(x => x.Key == linkOfGuid).Value;
             if (room == null)
             {
@@ -108,7 +109,7 @@ namespace The_Game.Controllers
             var winner = await game.PlayersPlay();
             if (winner.Value == "Exit")
             {
-                SessionPlayRooms.TryRemove(linkOfGuid, out _);
+                
                 return BadRequest();
             }
 
