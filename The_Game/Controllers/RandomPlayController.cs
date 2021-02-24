@@ -130,3 +130,7 @@ namespace The_Game.Controllers
         }
     }
 }
+//Controller dlia privat commnat //
+//Bot
+//pochaty statistiky zapysuvaty
+//
