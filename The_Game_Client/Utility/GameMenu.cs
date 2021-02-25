@@ -105,8 +105,9 @@ namespace The_Game_Client.Utility
                 case 3:
                     Console.Clear();
                     stopWatch.Stop();
-                    TimeSpan ts = stopWatch.Elapsed;
-                    stat.TimeInGame.Add(ts);
+                    TimeSpan timeSpan = stopWatch.Elapsed;
+                    TimeSpan ts = TimeSpan.Parse(stat.TimeInGame);
+                    stat.TimeInGame = ts.Add(timeSpan).ToString();
                     await PostStatsAsync(stat);
 
                     //await RunGameMenuAsync();
@@ -151,7 +152,9 @@ namespace The_Game_Client.Utility
                 if (stat == null) stat = new PlayerPersonalStat()
                 {
                     Login = user.Login,
-                    TimeInGame = TimeSpan.Zero
+                    TimeInGame = "00:00:00",
+                    WinRate = 0,
+                    ChangesWinrate = new Dictionary<DateTime, float>()
                 };
                 await RunGameMenuAsync();
             }
@@ -193,7 +196,7 @@ namespace The_Game_Client.Utility
         {
 
             var content = new StringContent(JsonConvert.SerializeObject(stat), Encoding.UTF8, "application/json");
-            var response = await client.PostAsync($"/api/PersonalPlayersStat/gavno", content);
+            var response = await client.PostAsync($"/api/PersonalPlayersStat", content);
         }
         public async Task LeaderBoardAsync(Auth auth)
         {

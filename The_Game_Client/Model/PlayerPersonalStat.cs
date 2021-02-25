@@ -17,7 +17,7 @@ namespace The_Game_Client.Model
         public int PaperCount { get; set; }
 
         public Dictionary<DateTime, float> ChangesWinrate;
-        public TimeSpan TimeInGame { get; set; }
+        public string TimeInGame { get; set; }
 
     }
 }

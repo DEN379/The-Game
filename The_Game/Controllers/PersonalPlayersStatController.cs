@@ -22,7 +22,7 @@ namespace The_Game.Controllers
             _jsonPlayerWorker = jsonPlayerWorker;
         }
 
-        [HttpGet("/{playerLogin}")]
+        [HttpGet("{playerLogin}")]
         public ActionResult<PlayerPersonalStat> GetPersonalStat(string playerLogin)
         {
 
@@ -30,7 +30,7 @@ namespace The_Game.Controllers
 
         }
 
-        [HttpPost("/gavno")]
+        [HttpPost]
         public  async  Task<IActionResult> PostPersonalStat(PlayerPersonalStat playerStat)
         {
             await _personalStatStorage.AddAsync(playerStat);

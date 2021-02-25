@@ -18,7 +18,7 @@ namespace The_Game.Models
 
         public Dictionary<DateTime, float> ChangesWinrate;
         // if currentDateTime = ChangesWinragte.key {value = }
-        public TimeSpan TimeInGame { get; set; }
+        public string TimeInGame { get; set; }
 
     }
 }
