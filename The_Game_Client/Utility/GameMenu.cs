@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -34,7 +35,7 @@ namespace The_Game_Client.Utility
             string[] options = new string[] { "Login", "Registration", "LeaderBoard", "Exit" };
             menu = new Menu(logo, options);
             var json = File.ReadAllText("settings.json");
-            var settings = JsonSerializer.Deserialize<Settings>(json);
+            var settings = JsonConvert.DeserializeObject<Settings>(json);
             client = new HttpClient();
             client.BaseAddress = new Uri(settings.BaseAddress);
             auth = new Auth(client);
@@ -103,14 +104,21 @@ namespace The_Game_Client.Utility
                     break;
                 case 3:
                     Console.Clear();
-                    await RunMainMenuAsync();
+                    stopWatch.Stop();
+                    TimeSpan ts = stopWatch.Elapsed;
+                    stat.TimeInGame.Add(ts);
+                    await PostStatsAsync(stat);
+
+                    //await RunGameMenuAsync();
+                    //await RunMainMenuAsync();
                     break;
             }
 
 
-            stopWatch.Stop();
-            TimeSpan ts = stopWatch.Elapsed;
-            stat.TimeInGame.Add(ts);
+            //stopWatch.Stop();
+            //TimeSpan ts = stopWatch.Elapsed;
+            //stat.TimeInGame.Add(ts);
+            //await PostStatsAsync(stat);
 
             await RunGameMenuAsync();
         }
@@ -139,6 +147,12 @@ namespace The_Game_Client.Utility
             {
                 User = user;
                 auth.User = user;
+                stat = JsonConvert.DeserializeObject<PlayerPersonalStat>(await GetStatsAsync(user));
+                if (stat == null) stat = new PlayerPersonalStat()
+                {
+                    Login = user.Login,
+                    TimeInGame = TimeSpan.Zero
+                };
                 await RunGameMenuAsync();
             }
 
@@ -169,6 +183,18 @@ namespace The_Game_Client.Utility
 
         }
 
+        public async Task<string> GetStatsAsync(User user)
+        {
+            var response = await client.GetAsync($"/api/PersonalPlayersStat/{user.Login}");
+            return await response.Content.ReadAsStringAsync();
+        }
+
+        public async Task PostStatsAsync(PlayerPersonalStat stat)
+        {
+
+            var content = new StringContent(JsonConvert.SerializeObject(stat), Encoding.UTF8, "application/json");
+            var response = await client.PostAsync($"/api/PersonalPlayersStat/gavno", content);
+        }
         public async Task LeaderBoardAsync(Auth auth)
         {
             var response = await client.GetAsync("/api/LeaderBoard");

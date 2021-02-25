@@ -30,7 +30,7 @@ namespace The_Game.Controllers
 
         }
 
-        [HttpPost()]
+        [HttpPost("/gavno")]
         public  async  Task<IActionResult> PostPersonalStat(PlayerPersonalStat playerStat)
         {
             await _personalStatStorage.AddAsync(playerStat);
