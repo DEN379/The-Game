@@ -20,7 +20,7 @@ namespace The_Game.Services
             return DataBase.FirstOrDefault();
         }
 
-        public int? SelectRoom(Guid guid)
+        public int SelectRoom(Guid guid)
         {
             return DataBase.Select(x => x).FirstOrDefault(x => x.Value.Guid == guid).Key;
         }

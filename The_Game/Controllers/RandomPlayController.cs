@@ -16,6 +16,7 @@ namespace The_Game.Controllers
     {
         private readonly RoomStorage _rooms;
         private readonly ILogger _logger;
+        private readonly LeaderboardStorage _leaderboard;
         private static readonly ConcurrentDictionary<Guid, Room> Session = new ConcurrentDictionary<Guid, Room>();
         private static readonly ConcurrentDictionary<Guid,PlayRoom> PlayRooms= new ConcurrentDictionary<Guid, PlayRoom>();
         private static readonly ConcurrentDictionary<Guid, PlayRoom> SessionPlayRooms = new ConcurrentDictionary<Guid, PlayRoom>();
@@ -125,8 +126,24 @@ namespace The_Game.Controllers
             {
                 return "Exit";
             }
-            
-            
+
+            if (winner.Value == room.FirstPlayer.Login)
+            {
+               await _leaderboard.AddWins(room.FirstPlayer.Login);
+               await _leaderboard.AddLoses(room.SecondPlayer.Login);
+            }
+            else if (winner.Value == room.SecondPlayer.Login)
+            {
+                await _leaderboard.AddWins(room.SecondPlayer.Login);
+                await _leaderboard.AddLoses(room.FirstPlayer.Login);
+            }
+            if (winner.Value == "Draw")
+            {
+                await _leaderboard.AddDraws(room.FirstPlayer.Login);
+                await _leaderboard.AddDraws(room.SecondPlayer.Login);
+            }
+
+
             return winner;
         }
     }

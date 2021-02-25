@@ -56,6 +56,7 @@ namespace The_Game_Client.Utility
                     break;
                 case 2:
                     return;
+
             }
 
             await RunMainMenuAsync();
