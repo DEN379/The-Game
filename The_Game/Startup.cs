@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using The_Game.Classes;
 using The_Game.Interfaces;
+using The_Game.Models;
 using The_Game.Services;
 
 namespace The_Game
@@ -29,7 +30,9 @@ namespace The_Game
         {
             services.AddSingleton<RoomStorage>();
             services.AddSingleton<UserStorage>();
-            services.AddSingleton<ConcurrentQueue<Guid>>();
+            services.AddSingleton<LeaderboardStorage>();
+            services.AddSingleton<RoomStorage>();
+            services.AddSingleton<PlayRoomStorage>();
             services.AddControllers();
         }
         
