@@ -16,17 +16,17 @@ namespace The_Game.Controllers
     {
         private readonly RoomStorage _rooms;
         private readonly ILogger _logger;
-        private readonly LeaderboardStorage _leaderboard;
+        private readonly LeaderboardStorage _leaderBoard;
         private readonly JsonWorker<Leaderboard> _jsonUpdaterLeaderBoard = new JsonWorker<Leaderboard>();
         private static readonly ConcurrentDictionary<Guid, Room> Session = new ConcurrentDictionary<Guid, Room>();
         private static readonly ConcurrentDictionary<Guid,PlayRoom> PlayRooms= new ConcurrentDictionary<Guid, PlayRoom>();
         private static readonly ConcurrentDictionary<Guid, PlayRoom> SessionPlayRooms = new ConcurrentDictionary<Guid, PlayRoom>();
 
-        public RandomPlayController(RoomStorage rooms, ILogger<RandomPlayController> logger, LeaderboardStorage leaderboard)
+        public RandomPlayController(RoomStorage rooms, ILogger<RandomPlayController> logger, LeaderboardStorage leaderBoard)
         {
             _rooms = rooms;
             _logger = logger;
-            _leaderboard = leaderboard;
+            _leaderBoard = leaderBoard;
             
         }
 
@@ -126,24 +126,24 @@ namespace The_Game.Controllers
             var winner = await game.PlayersPlay();
             if (winner.Value == "Exit")
             {
-                _jsonUpdaterLeaderBoard.UpdateFile("Leaderboard.json",_leaderboard.GetDictionary());
+                _jsonUpdaterLeaderBoard.UpdateFile("Leaderboard.json",_leaderBoard.GetDictionary());
                 return "Exit";
             }
 
             if (winner.Value == room.FirstPlayer.Login)
             {
-               await _leaderboard.AddWins(room.FirstPlayer.Login);
-               await _leaderboard.AddLoses(room.SecondPlayer.Login);
+               await _leaderBoard.AddWins(room.FirstPlayer.Login);
+               await _leaderBoard.AddLoses(room.SecondPlayer.Login);
             }
             else if (winner.Value == room.SecondPlayer.Login)
             {
-                await _leaderboard.AddWins(room.SecondPlayer.Login);
-                await _leaderboard.AddLoses(room.FirstPlayer.Login);
+                await _leaderBoard.AddWins(room.SecondPlayer.Login);
+                await _leaderBoard.AddLoses(room.FirstPlayer.Login);
             }
             if (winner.Value == "Draw")
             {
-                await _leaderboard.AddDraws(room.FirstPlayer.Login);
-                await _leaderboard.AddDraws(room.SecondPlayer.Login);
+                await _leaderBoard.AddDraws(room.FirstPlayer.Login);
+                await _leaderBoard.AddDraws(room.SecondPlayer.Login);
             }
 
 
