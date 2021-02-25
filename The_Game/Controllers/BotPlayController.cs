@@ -24,7 +24,7 @@ namespace The_Game.Controllers
             _bot.Command = (Commands) rand.Next(1, 3);
             var game = new GameProcess(player, _bot);
            var winner=await game.PlayersPlay();
-           return winner.Value == "Exit" ? BadRequest() : winner;
+           return winner.Value == "Exit" ? "Exit" : winner;
         }
     }
 }
