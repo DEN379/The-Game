@@ -68,6 +68,7 @@ namespace The_Game_Client.Utility
                 Console.WriteLine(guid);
                 Console.WriteLine("\nPress any key to continue...");
                 Console.ReadKey();
+                
                 return true;
             }
             return false;
@@ -75,13 +76,13 @@ namespace The_Game_Client.Utility
 
         public async Task<bool> GetPrivateAsync(string controller, string request)
         {
-            var response = await client.GetAsync(controller + request);
-
-            if (response.StatusCode == HttpStatusCode.OK)
+            while (true)
             {
-                return true;
+                var responseToStart = await client.GetAsync(controller + request);
+
+                if (responseToStart.StatusCode == HttpStatusCode.OK) { Console.WriteLine("Es"); return true; }
+                await Task.Delay(2000);
             }
-            return false;
         }
 
         public async Task FindRoomAsync(string controller, string guid)
@@ -141,6 +142,19 @@ namespace The_Game_Client.Utility
                     Console.WriteLine(response.StatusCode);
                 }
             }
+        }
+
+        public async Task<bool> PostFigureBotAsync(string firstRequest, Commands commands)
+        {
+
+            var player = new Player()
+            {
+                Login = User.Login,
+                Password = User.Password,
+                Command = commands
+            };
+            var response = await PostRequestAsync<Player>(player, $"/{firstRequest}");
+            return await PrintGameResultAsync(response);
         }
 
         private async Task<HttpResponseMessage> PostRequestAsync<T>(object obj, string request)

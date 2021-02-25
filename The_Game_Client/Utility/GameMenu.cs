@@ -92,7 +92,7 @@ namespace The_Game_Client.Utility
                     break;
                 case 2:
                     Console.Clear();
-                    await RunMainMenuAsync();
+                    await BotGame("api/BotPlay");
                     break;
                 case 3:
                     Console.Clear();
@@ -226,6 +226,37 @@ namespace The_Game_Client.Utility
                 isRunning = await auth.PostFigureAsync(controller, secondary, command);
 
             } 
+        }
+
+        private async Task BotGame(string controller)
+        {
+            string logo = "Choose a figure => ";
+            string[] options = new string[] { "Rock", "Scissors", "Paper", "Exit" };
+            Menu randomGameMenu = new Menu(logo, options);
+
+            Commands command = Commands.Exit;
+            bool isRunning = true;
+            while (isRunning)
+            {
+                int result = randomGameMenu.Run();
+                Console.WriteLine(result);
+                switch (result)
+                {
+                    case 0:
+                        command = Commands.Stone;
+                        break;
+                    case 1:
+                        command = Commands.Scissors;
+                        break;
+                    case 2:
+                        command = Commands.Paper;
+                        break;
+                    default:
+                        command = Commands.Exit;
+                        break;
+                }
+                isRunning = await auth.PostFigureBotAsync(controller, command);
+            }
         }
 
         public async Task ReturnToMainMenuAsync()
