@@ -110,7 +110,7 @@ namespace The_Game.Controllers
             if (winner.Value == "Exit")
             {
                 
-                return BadRequest();
+                return "Exit";
             }
 
             return winner;

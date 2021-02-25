@@ -56,10 +56,8 @@ namespace The_Game_Client.Utility
                     break;
                 case 2:
                     return;
-                    
+
             }
-
-
 
             await RunMainMenuAsync();
         }
@@ -86,11 +84,11 @@ namespace The_Game_Client.Utility
             {
                 case 0:
                     Console.Clear();
-                    await RandomGameAsync();
+                    await RandomGameAsync("api/RandomPlay", "game");
                     break;
                 case 1:
                     Console.Clear();
-                    await RunMainMenuAsync();
+                    await PrivateGameAsync("api/PrivatePlay", "game");
                     break;
                 case 2:
                     Console.Clear();
@@ -163,42 +161,72 @@ namespace The_Game_Client.Utility
 
         }
 
-        public async Task RandomGameAsync()
+        public async Task RandomGameAsync(string controller, string secondary)
         {
-            bool running = true;
-            if(await auth.GetAsync($"/api/RandomPlay/create/{User.Login}"))
+            if(await auth.GetAsync($"/{controller}",$"/create/{User.Login}"))
             {
-                string logo = "Choose a figure => ";
-                string[] options = new string[] { "Rock", "Scissors", "Paper", "Exit" };
-                Menu randomGameMenu = new Menu(logo, options);
-
-                Commands command = Commands.Exit;
-                while (running)
-                {
-                    int result = randomGameMenu.Run();
-                    Console.WriteLine(result);
-                    switch (result)
-                    {
-                        case 0: command = Commands.Stone;
-                            break;
-                        case 1: command = Commands.Scissors;
-                            break;
-                        case 2: command = Commands.Paper;
-                            break;
-                        default: command = Commands.Exit;
-                            break;
-                    }
-                    running = await auth.PostFigureAsync(command);
-                    
-                }
+                await TheGame(controller, secondary);
             }
         }
 
-        //public async Task TheGame()
-        //{
-
+        public async Task PrivateGameAsync(string controller, string secondary)
+        {
             
-        //}
+            string logo = "Create a new game or connect to exist server => ";
+            string[] options = new string[] { "Join", "Create", "Exit" };
+            Menu privateGameMenu = new Menu(logo, options);
+
+            int result = privateGameMenu.Run();
+            bool isAuth = false;
+            switch (result)
+            {
+                case 0:
+                    Console.WriteLine("Enter pls your partner's id to enter to lobby: ");
+                    string guid = Console.ReadLine().Trim();
+                    isAuth = await auth.GetPrivateAsync($"/{controller}", $"/{User.Login}/{guid}");
+                    break;
+                case 1:
+                    isAuth = await auth.GetCreateAsync($"/{controller}", $"/create/{User.Login}");
+                    break;
+                default: return;
+            }
+
+            if (isAuth) await TheGame(controller, secondary);
+
+
+        }
+
+        private async Task TheGame(string controller, string secondary)
+        {
+            string logo = "Choose a figure => ";
+            string[] options = new string[] { "Rock", "Scissors", "Paper", "Exit" };
+            Menu randomGameMenu = new Menu(logo, options);
+
+            Commands command = Commands.Exit;
+            bool isRunning = true;
+            while (isRunning)
+            {
+                int result = randomGameMenu.Run();
+                Console.WriteLine(result);
+                switch (result)
+                {
+                    case 0:
+                        command = Commands.Stone;
+                        break;
+                    case 1:
+                        command = Commands.Scissors;
+                        break;
+                    case 2:
+                        command = Commands.Paper;
+                        break;
+                    default:
+                        command = Commands.Exit;
+                        break;
+                }
+                isRunning = await auth.PostFigureAsync(controller, secondary, command);
+
+            } 
+        }
 
         public async Task ReturnToMainMenuAsync()
         {

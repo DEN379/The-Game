@@ -124,7 +124,7 @@ namespace The_Game.Controllers
             var winner = await game.PlayersPlay();
             if (winner.Value == "Exit")
             {
-                return BadRequest();
+                return "Exit";
             }
 
             if (winner.Value == room.FirstPlayer.Login)
