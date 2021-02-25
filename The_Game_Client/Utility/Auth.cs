@@ -120,7 +120,12 @@ namespace The_Game_Client.Utility
             Console.WriteLine(Guid);
             Console.WriteLine(responseForGame.StatusCode);
 
-            if (commands == Commands.Exit) return false;
+            if (commands == Commands.Exit)
+            {
+                await client.GetAsync($"/{firstRequest}/{secondRequest}/{Guid}");
+                return false;
+            }
+
             while (true)
             {
                 Console.WriteLine($"/{firstRequest}/{secondRequest}/{Guid}");
