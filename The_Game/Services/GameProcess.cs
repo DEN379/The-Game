@@ -45,18 +45,18 @@ namespace The_Game.Services
                 case Commands.Scissors:
                     switch (command2)
                     {
-                        case Commands.Stone:
-                            return Commands.Stone;
+                        case Commands.Rock:
+                            return Commands.Rock;
                         case Commands.Paper:
                             return Commands.Scissors;
                     }
 
                     break;
-                case Commands.Stone:
+                case Commands.Rock:
                     switch (command2)
                     {
                         case Commands.Scissors:
-                            return Commands.Stone;
+                            return Commands.Rock;
                         case Commands.Paper:
                             return Commands.Paper;
                     }
@@ -65,7 +65,7 @@ namespace The_Game.Services
                 case Commands.Paper:
                     switch (command2)
                     {
-                        case Commands.Stone:
+                        case Commands.Rock:
                             return Commands.Paper;
                         case Commands.Scissors:
                             return Commands.Scissors;
