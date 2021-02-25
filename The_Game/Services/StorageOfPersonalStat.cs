@@ -14,5 +14,18 @@ namespace The_Game.Services
         {
             DataBase = _playerStatWorker.ReadList("PlayerPersonalStat.json").Result ?? new ConcurrentDictionary<int, PlayerPersonalStat>();
         }
+
+        public void UpdateStat(PlayerPersonalStat stat)
+        {
+            var newStat = DataBase.FirstOrDefault(x => x.Value.Login == stat.Login);
+            AddOrUpdateAsync(newStat.Key, stat);
+        }
+
+        public Task UpdateStatAsync(PlayerPersonalStat stat)
+        {
+            UpdateStat(stat);
+            return Task.CompletedTask;
+
+        }
     }
 }

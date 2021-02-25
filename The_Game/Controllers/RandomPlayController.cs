@@ -17,16 +17,14 @@ namespace The_Game.Controllers
         private readonly RoomStorage _rooms;
         private readonly ILogger _logger;
         private readonly LeaderboardStorage _leaderBoard;
-        private readonly JsonWorker<Leaderboard> _jsonUpdaterLeaderBoard = new JsonWorker<Leaderboard>();
+        private readonly JsonWorker<Leaderboard> _jsonUpdaterLeaderBoard;
         private readonly PlayRoomStorage _playRooms;
-        private readonly PlayRoomStorage _sessionPlayRooms;
+        private readonly PlaySessinRoomStorage _sessionPlayRooms;
         private readonly RoomStorage _session;
 
-        //private static readonly ConcurrentDictionary<Guid, Room> Session = new ConcurrentDictionary<Guid, Room>();
-        //private static readonly ConcurrentDictionary<Guid,PlayRoom> PlayRooms= new ConcurrentDictionary<Guid, PlayRoom>();
-        //private static readonly ConcurrentDictionary<Guid, PlayRoom> SessionPlayRooms = new ConcurrentDictionary<Guid, PlayRoom>();
+        
 
-        public RandomPlayController(RoomStorage rooms, ILogger<RandomPlayController> logger, LeaderboardStorage leaderBoard, RoomStorage session, PlayRoomStorage sessionplayRooms, PlayRoomStorage playRooms)
+        public RandomPlayController(RoomStorage rooms, ILogger<RandomPlayController> logger, LeaderboardStorage leaderBoard, RoomStorage session, PlaySessinRoomStorage sessionplayRooms, PlayRoomStorage playRooms, JsonWorker<Leaderboard> jsonUpdaterLeaderBoard)
         {
             _rooms = rooms;
             _logger = logger;
@@ -34,6 +32,7 @@ namespace The_Game.Controllers
             _session = session;
             _sessionPlayRooms = sessionplayRooms;
             _playRooms = playRooms;
+            _jsonUpdaterLeaderBoard = jsonUpdaterLeaderBoard;
         }
 
         [HttpGet("create/{login}")]
@@ -54,7 +53,7 @@ namespace The_Game.Controllers
 
             room.Value.Player2 = login;
            await _session.AddWithGuidAsync(room.Value.Guid,room.Value);
-            //Session.TryAdd(room.Value.Guid, room.Value);
+            
             await _rooms.DeleteAsync(room.Key);
             return room.Value.Guid;
 
@@ -77,9 +76,9 @@ namespace The_Game.Controllers
         [HttpPost("{linkOfGuid}")]
         public async Task<IActionResult> PlayGameAsync(Guid linkOfGuid,Player player)
         {
-           // SessionPlayRooms.TryRemove(linkOfGuid, out _);
+          
            await _sessionPlayRooms.DeleteAsync(linkOfGuid);
-            //var room = PlayRooms.Select(x => x).FirstOrDefault(x => x.Key == linkOfGuid).Value;
+            
             var room = await _playRooms.Get(linkOfGuid);
             if (room== null)
             {
@@ -95,41 +94,16 @@ namespace The_Game.Controllers
 
             room.SecondPlayer = player;
             await _playRooms.DeleteAsync(linkOfGuid);
-            //PlayRooms.TryRemove(linkOfGuid,out _);
-            //SessionPlayRooms.TryAdd(linkOfGuid, room);
+
             await _sessionPlayRooms.AddWithGuidAsync(linkOfGuid, room);
             return Ok();
 
-            #region NonWorkWariant
-
-            //bool notStarted = true;
-            //Player firstPlayer = null;
-            //Player secondPlayer = null;
-            //while (true)
-            //{
-            //    if (firstPlayer != null && secondPlayer != null)
-            //    {
-            //        break;
-            //    }
-
-            //    if (player.Login == room.Player1)
-            //    {
-            //        firstPlayer = player;
-            //    }
-            //    else
-            //    {
-            //        secondPlayer = player;
-            //    }
-            //}
-
-            //var winner = await game.PlayersPlay(firstPlayer, secondPlayer);
-
-            #endregion
+            
         }
         [HttpGet("game/{linkOfGuid}")]
         public async Task<ActionResult<string>> WaitingEnemy(Guid linkOfGuid)
         {
-           // var room = SessionPlayRooms.Select(x => x).FirstOrDefault(x => x.Key == linkOfGuid).Value;
+           
            var room = await _sessionPlayRooms.Get(linkOfGuid);
             if (room == null)
             {
@@ -159,13 +133,7 @@ namespace The_Game.Controllers
                 await _leaderBoard.AddDraws(room.SecondPlayer.Login);
             }
 
-
-
             return winner;
         }
     }
 }
-//Controller dlia privat commnat //
-//Bot
-//pochaty statistiky zapysuvaty
-//

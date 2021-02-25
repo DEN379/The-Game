@@ -35,6 +35,7 @@ namespace The_Game
             services.AddSingleton<RoomStorage>();
             services.AddSingleton<UserStorage>();
             services.AddSingleton<LeaderboardStorage>();
+            services.AddSingleton<PlaySessinRoomStorage>();
             //services.AddSingleton<RoomStorage>();
             services.AddSingleton<PlayRoomStorage>();
             services.AddTransient<JsonWorker<PlayerPersonalStat>>();
