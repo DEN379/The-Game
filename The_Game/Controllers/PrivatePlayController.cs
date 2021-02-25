@@ -50,7 +50,7 @@ namespace The_Game.Controllers
         public async Task<IActionResult> WaitingLobby(string login,Guid linkOfGuid)
         {
             var waitingRoom = _rooms.SelectRoom(linkOfGuid);
-            if (waitingRoom == null)
+            if (waitingRoom == 0)
             {
                 return NotFound();
             }
