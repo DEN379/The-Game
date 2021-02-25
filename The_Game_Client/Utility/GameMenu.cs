@@ -18,6 +18,7 @@ namespace The_Game_Client.Utility
         private Auth auth;
         public static User User { get; private set; }
         private Timer timer = new Timer(5000);
+        private PlayerPersonalStat stat;
 
         public GameMenu()
         {
@@ -83,8 +84,8 @@ namespace The_Game_Client.Utility
             Menu gameMenu = new Menu(logo, options);
             int selected = gameMenu.Run();
 
-            //Stopwatch stopWatch = new Stopwatch();
-            //stopWatch.Start();
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
 
             switch (selected)
             {
@@ -107,9 +108,10 @@ namespace The_Game_Client.Utility
             }
 
 
-            //stopWatch.Stop();
-            //TimeSpan ts = stopWatch.Elapsed;
-            
+            stopWatch.Stop();
+            TimeSpan ts = stopWatch.Elapsed;
+            stat.TimeInGame.Add(ts);
+
             await RunGameMenuAsync();
         }
 
