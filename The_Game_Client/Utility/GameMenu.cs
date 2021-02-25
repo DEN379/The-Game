@@ -184,7 +184,12 @@ namespace The_Game_Client.Utility
                     Console.WriteLine("Enter pls your partner's id to enter to lobby: ");
                     string guid = Console.ReadLine().Trim();
                     Console.WriteLine($"/{controller}", $"/{User.Login}/{guid}");
-                    isAuth = await auth.GetPrivateAsync($"/{controller}", $"/{User.Login}/{guid}");
+
+                    if(isAuth = await auth.GetPrivateAsync($"/{controller}", $"/{User.Login}/{guid}"))
+                    {
+                        auth.Guid = guid;
+                    }
+                    
                     break;
                 case 1:
                     isAuth = await auth.GetCreateAsync($"/{controller}", $"/create/",$"{User.Login}");
