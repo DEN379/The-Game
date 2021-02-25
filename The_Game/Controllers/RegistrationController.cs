@@ -20,14 +20,16 @@ namespace The_Game.Controllers
     public class RegistrationController : ControllerBase
     {
         private readonly JsonWorker<User> _readUsers = new JsonWorker<User>();
+        private readonly JsonWorker<Leaderboard> _readLeaderboard = new JsonWorker<Leaderboard>();
         private  readonly UserStorage _users;
         private readonly ILogger<RegistrationController> _logger;
+        private readonly LeaderboardStorage _leaderboard;
 
-        public RegistrationController(UserStorage storage ,ILogger<RegistrationController> regLogger)
+        public RegistrationController(UserStorage storage ,ILogger<RegistrationController> regLogger, LeaderboardStorage leaderboard)
         {
             _users = storage;
             _logger = regLogger;
-            
+            _leaderboard = leaderboard;
         }
 
         [HttpPost]
@@ -38,6 +40,11 @@ namespace The_Game.Controllers
                 return BadRequest();
             }
             await _users.AddAsync(user);
+            await _leaderboard.AddAsync(new Leaderboard()
+            {
+                Login = user.Login
+            });
+            _readLeaderboard.UpdateFile("Leaderboard.json",_leaderboard.GetDictionary());
             _readUsers.UpdateFile("Users.json", _users.GetDictionary());
             return Ok();
 
