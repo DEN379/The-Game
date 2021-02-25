@@ -14,6 +14,7 @@ namespace The_Game.Controllers
     [ApiController]
     public class BotPlayController : ControllerBase
     {
+
         private Player _bot = new Player()
             {Login = "Bot"};
 
