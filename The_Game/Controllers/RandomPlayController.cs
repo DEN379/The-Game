@@ -18,20 +18,26 @@ namespace The_Game.Controllers
         private readonly ILogger _logger;
         private readonly LeaderboardStorage _leaderBoard;
         private readonly JsonWorker<Leaderboard> _jsonUpdaterLeaderBoard = new JsonWorker<Leaderboard>();
-        private static readonly ConcurrentDictionary<Guid, Room> Session = new ConcurrentDictionary<Guid, Room>();
-        private static readonly ConcurrentDictionary<Guid,PlayRoom> PlayRooms= new ConcurrentDictionary<Guid, PlayRoom>();
-        private static readonly ConcurrentDictionary<Guid, PlayRoom> SessionPlayRooms = new ConcurrentDictionary<Guid, PlayRoom>();
+        private readonly PlayRoomStorage _playRooms;
+        private readonly PlayRoomStorage _sessionPlayRooms;
+        private readonly RoomStorage _session;
 
-        public RandomPlayController(RoomStorage rooms, ILogger<RandomPlayController> logger, LeaderboardStorage leaderBoard)
+        //private static readonly ConcurrentDictionary<Guid, Room> Session = new ConcurrentDictionary<Guid, Room>();
+        //private static readonly ConcurrentDictionary<Guid,PlayRoom> PlayRooms= new ConcurrentDictionary<Guid, PlayRoom>();
+        //private static readonly ConcurrentDictionary<Guid, PlayRoom> SessionPlayRooms = new ConcurrentDictionary<Guid, PlayRoom>();
+
+        public RandomPlayController(RoomStorage rooms, ILogger<RandomPlayController> logger, LeaderboardStorage leaderBoard, RoomStorage session, PlayRoomStorage sessionplayRooms, PlayRoomStorage playRooms)
         {
             _rooms = rooms;
             _logger = logger;
             _leaderBoard = leaderBoard;
-            
+            _session = session;
+            _sessionPlayRooms = sessionplayRooms;
+            _playRooms = playRooms;
         }
 
         [HttpGet("create/{login}")]
-        public ActionResult<Guid> StartGame(string login)
+        public async  Task<ActionResult<Guid>> StartGame(string login)
         {
             var room = _rooms.TakeLastRoom();
             if(room.Value==null)
@@ -42,21 +48,22 @@ namespace The_Game.Controllers
                     Player1 = login,
                     Player2 = null
                 };
-                _rooms.AddAsync(newRoom);
+                await _rooms.AddAsync(newRoom);
                 return newRoom.Guid;
             }
 
             room.Value.Player2 = login;
-            Session.TryAdd(room.Value.Guid, room.Value);
-            _rooms.DeleteAsync(room.Key);
+           await _session.AddWithGuidAsync(room.Value.Guid,room.Value);
+            //Session.TryAdd(room.Value.Guid, room.Value);
+            await _rooms.DeleteAsync(room.Key);
             return room.Value.Guid;
 
         }
 
         [HttpGet("{linkOfGuid}")]
-        public IActionResult WaitingLobby(Guid linkOfGuid)
+        public async Task<IActionResult> WaitingLobby(Guid linkOfGuid)
         {
-            var room = Session.Select(x => x).FirstOrDefault(x => x.Key == linkOfGuid).Value;
+            var room = await _session.Get(linkOfGuid);
             if (room == null)
             {
                 return NotFound();
@@ -70,8 +77,10 @@ namespace The_Game.Controllers
         [HttpPost("{linkOfGuid}")]
         public async Task<IActionResult> PlayGameAsync(Guid linkOfGuid,Player player)
         {
-            SessionPlayRooms.TryRemove(linkOfGuid, out _);
-            var room = PlayRooms.Select(x => x).FirstOrDefault(x => x.Key == linkOfGuid).Value;
+           // SessionPlayRooms.TryRemove(linkOfGuid, out _);
+           await _sessionPlayRooms.DeleteAsync(linkOfGuid);
+            //var room = PlayRooms.Select(x => x).FirstOrDefault(x => x.Key == linkOfGuid).Value;
+            var room = await _playRooms.Get(linkOfGuid);
             if (room== null)
             {
                 var newPlayRoom = new PlayRoom()
@@ -79,13 +88,16 @@ namespace The_Game.Controllers
                     FirstPlayer = player,
                     SecondPlayer = null
                 };
-                PlayRooms.TryAdd(linkOfGuid,newPlayRoom);
+                //
+                await _playRooms.AddWithGuidAsync(linkOfGuid, newPlayRoom);
                 return Ok();
             }
 
             room.SecondPlayer = player;
-            PlayRooms.TryRemove(linkOfGuid,out _);
-            SessionPlayRooms.TryAdd(linkOfGuid, room);
+            await _playRooms.DeleteAsync(linkOfGuid);
+            //PlayRooms.TryRemove(linkOfGuid,out _);
+            //SessionPlayRooms.TryAdd(linkOfGuid, room);
+            await _sessionPlayRooms.AddWithGuidAsync(linkOfGuid, room);
             return Ok();
 
             #region NonWorkWariant
@@ -117,7 +129,8 @@ namespace The_Game.Controllers
         [HttpGet("game/{linkOfGuid}")]
         public async Task<ActionResult<string>> WaitingEnemy(Guid linkOfGuid)
         {
-            var room = SessionPlayRooms.Select(x => x).FirstOrDefault(x => x.Key == linkOfGuid).Value;
+           // var room = SessionPlayRooms.Select(x => x).FirstOrDefault(x => x.Key == linkOfGuid).Value;
+           var room = await _sessionPlayRooms.Get(linkOfGuid);
             if (room == null)
             {
                 return NotFound();
