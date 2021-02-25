@@ -17,7 +17,7 @@ namespace The_Game.Services
         public bool FindUser(User user)
         {
             var find = DataBase.Select(x => x.Value).FirstOrDefault(x => x.Login == user.Login);
-            return find != null;
+            return find != null && find.Password == user.Password;
         }
 
     }
