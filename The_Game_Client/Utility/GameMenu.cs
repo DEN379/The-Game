@@ -30,7 +30,7 @@ namespace The_Game_Client.Utility
   \_/ |_| |_|\___|  \____/\__,_|_| |_| |_|\___|
                                                
                                                ";
-            string[] options = new string[] { "Login", "Registration", "Exit" };
+            string[] options = new string[] { "Login", "Registration", "LeaderBoard", "Exit" };
             menu = new Menu(logo, options);
             var json = File.ReadAllText("settings.json");
             var settings = JsonSerializer.Deserialize<Settings>(json);
@@ -55,7 +55,13 @@ namespace The_Game_Client.Utility
                     await RegisterAsync(auth);
                     break;
                 case 2:
-                    return;
+                    Console.Clear();
+                    await LeaderBoardAsync(auth);
+                    Console.ReadKey();
+                    break;
+                case 3:
+                    Environment.Exit(1);
+                    break;
 
             }
 
@@ -159,6 +165,13 @@ namespace The_Game_Client.Utility
 
             await auth.PostAsync("/registration", user);
 
+        }
+
+        public async Task LeaderBoardAsync(Auth auth)
+        {
+            var response = await client.GetAsync("/api/LeaderBoard");
+            var content = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(content);
         }
 
         public async Task RandomGameAsync(string controller, string secondary)
