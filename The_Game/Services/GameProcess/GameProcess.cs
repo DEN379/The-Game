@@ -1,13 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.Extensions.DependencyInjection;
 using The_Game.Models;
 
-namespace The_Game.Services
+namespace The_Game.Services.GameProcess
 {
-    public class GameProcess
+    public class GameProcess : IGameProcess
     {
         private readonly Player _player1;
         private readonly Player _player2;
@@ -33,7 +30,7 @@ namespace The_Game.Services
             return _player1.Command == winner ? _player1.Login : _player2.Login;
         }
 
-        private async Task<Commands?> WinCondition(Commands command, Commands command2)
+        public async Task<Commands?> WinCondition(Commands command, Commands command2)
         {
             if (command == command2)
             {
@@ -72,8 +69,6 @@ namespace The_Game.Services
                     }
 
                     break;
-
-                    
             }
 
             return null;

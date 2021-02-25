@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using The_Game.Models;
 
-namespace The_Game.Models
+namespace The_Game.Services.Storage
 {
    
     public abstract class RoomsStorage<T> : Storage<T> where T : class

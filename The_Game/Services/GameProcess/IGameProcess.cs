@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using The_Game.Models;
 
-namespace The_Game.Services
+namespace The_Game.Services.GameProcess
 {
     public interface IGameProcess
     {
