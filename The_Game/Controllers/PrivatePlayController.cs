@@ -68,7 +68,7 @@ namespace The_Game.Controllers
             
             newSessionRoom.Player2 = login;
             Session.TryAdd(newSessionRoom.Guid, newSessionRoom);
-            await _rooms.DeleteAsync(int.Parse(waitingRoom.ToString()));
+            //await _rooms.DeleteAsync(int.Parse(waitingRoom.ToString()));
             return Ok();
             
             
