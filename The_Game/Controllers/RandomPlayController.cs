@@ -17,14 +17,16 @@ namespace The_Game.Controllers
         private readonly RoomStorage _rooms;
         private readonly ILogger _logger;
         private readonly LeaderboardStorage _leaderboard;
+        private readonly JsonWorker<Leaderboard> _jsonUpdaterLeaderBoard = new JsonWorker<Leaderboard>();
         private static readonly ConcurrentDictionary<Guid, Room> Session = new ConcurrentDictionary<Guid, Room>();
         private static readonly ConcurrentDictionary<Guid,PlayRoom> PlayRooms= new ConcurrentDictionary<Guid, PlayRoom>();
         private static readonly ConcurrentDictionary<Guid, PlayRoom> SessionPlayRooms = new ConcurrentDictionary<Guid, PlayRoom>();
 
-        public RandomPlayController(RoomStorage rooms, ILogger<RandomPlayController> logger)
+        public RandomPlayController(RoomStorage rooms, ILogger<RandomPlayController> logger, LeaderboardStorage leaderboard)
         {
             _rooms = rooms;
             _logger = logger;
+            _leaderboard = leaderboard;
             
         }
 
@@ -124,6 +126,7 @@ namespace The_Game.Controllers
             var winner = await game.PlayersPlay();
             if (winner.Value == "Exit")
             {
+                _jsonUpdaterLeaderBoard.UpdateFile("Leaderboard.json",_leaderboard.GetDictionary());
                 return "Exit";
             }
 
@@ -142,6 +145,7 @@ namespace The_Game.Controllers
                 await _leaderboard.AddDraws(room.FirstPlayer.Login);
                 await _leaderboard.AddDraws(room.SecondPlayer.Login);
             }
+
 
 
             return winner;

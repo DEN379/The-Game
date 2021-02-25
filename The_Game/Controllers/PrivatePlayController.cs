@@ -105,13 +105,13 @@ namespace The_Game.Controllers
             {
                 return NotFound();
             }
-            var game = new GameProcess(room.FirstPlayer, room.FirstPlayer);
+            var game = new GameProcess(room.FirstPlayer, room.SecondPlayer);
             var winner = await game.PlayersPlay();
             if (winner.Value == "Exit")
             {
-                
                 return "Exit";
             }
+
 
             return winner;
         }

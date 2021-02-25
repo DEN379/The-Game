@@ -33,6 +33,7 @@ namespace The_Game
             services.AddSingleton<LeaderboardStorage>();
             services.AddSingleton<RoomStorage>();
             services.AddSingleton<PlayRoomStorage>();
+            services.AddScoped<JsonWorker<Leaderboard>>();
             services.AddControllers();
         }
         
