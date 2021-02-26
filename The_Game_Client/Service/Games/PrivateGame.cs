@@ -65,6 +65,9 @@ namespace The_Game_Client.Utility
                 Console.WriteLine("Private id for your parner => ");
                 Console.WriteLine(guid);
                 Console.WriteLine("\nPress any key to continue...");
+                TimerClass timer = new TimerClass(25000);
+                timer.SetTimer();
+                timer.StartTimer();
                 while (true)
                 {
                     response = await auth.client.GetAsync($"{controller}/{login}/{guid}");
@@ -80,13 +83,17 @@ namespace The_Game_Client.Utility
 
         public async Task<bool> GetPrivateAsync(string controller, string request)
         {
+            
             while (true)
             {
+                
                 var responseToStart = await auth.client.GetAsync(controller + request);
 
                 if (responseToStart.StatusCode == HttpStatusCode.OK) { return true; }
                 await Task.Delay(2000);
             }
+
+            
         }
     }
 }

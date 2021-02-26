@@ -34,22 +34,37 @@ namespace The_Game_Client.Service.Games
             {
                 var content = await response.Content.ReadAsStringAsync();
                 var guid = content.Trim('"');
-                await FindRoomAsync(controller, guid);
+                var game = await FindRoomAsync(controller, guid);
+                if (!game)
+                {
+                    return null;
+                }
+                
                 return guid;
             }
             return null;
         }
-        public async Task FindRoomAsync(string controller, string guid)
+        public async Task<bool> FindRoomAsync(string controller, string guid)
         {
+            TimerClass timer = new TimerClass(25000);
+            timer.SetTimer();
+            timer.StartTimer();
             Console.Write("Waiting");
             while (true)
             {
+                if (timer.inGoing == "Exit")
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("We cant find a room for you, sorry try latter )");
+                    return false;
+                }
                 Console.Write(".");
                 var responseToStart = await auth.client.GetAsync($"{controller}/{guid}");
 
-                if (responseToStart.StatusCode == HttpStatusCode.OK) {  break; }
+                if (responseToStart.StatusCode == HttpStatusCode.OK) {  return true; }
                 await Task.Delay(2000);
             }
+            
         }
     }
 }
