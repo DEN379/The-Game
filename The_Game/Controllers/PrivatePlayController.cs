@@ -78,7 +78,7 @@ namespace The_Game.Controllers
             
             
         }
-
+        [HttpPost("{linkOfGuid}")]
         public async Task<IActionResult> PlayGameAsync(Guid linkOfGuid, Player player)
         {
             _logger.LogInformation($"room with id {linkOfGuid} start there game");
