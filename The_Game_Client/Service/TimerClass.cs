@@ -33,6 +33,12 @@ namespace The_Game_Client.Utility
             _timer.Stop();
         }
 
+        public void TimerDispose()
+        {
+            _timer.Dispose();
+        }
+
+
         private void Unblock(Object source, ElapsedEventArgs e)
         {
             inGoing = "Exit";

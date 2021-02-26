@@ -70,6 +70,7 @@ namespace The_Game_Client.Utility
                         auth.Stat.Loses++;
                     }
                     Console.ReadKey();
+                    timer.TimerDispose();
                     return true;
 
                     //await PrintGameResultAsync(response);
