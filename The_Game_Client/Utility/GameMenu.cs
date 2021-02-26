@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -18,6 +19,7 @@ namespace The_Game_Client.Utility
         private Auth auth;
         public static User User { get; private set; }
         private Timer timer = new Timer(5000);
+        private PlayerPersonalStat stat;
 
         public GameMenu()
         {
@@ -33,7 +35,7 @@ namespace The_Game_Client.Utility
             string[] options = new string[] { "Login", "Registration", "LeaderBoard", "Exit" };
             menu = new Menu(logo, options);
             var json = File.ReadAllText("settings.json");
-            var settings = JsonSerializer.Deserialize<Settings>(json);
+            var settings = JsonConvert.DeserializeObject<Settings>(json);
             client = new HttpClient();
             client.BaseAddress = new Uri(settings.BaseAddress);
             auth = new Auth(client);
@@ -83,8 +85,8 @@ namespace The_Game_Client.Utility
             Menu gameMenu = new Menu(logo, options);
             int selected = gameMenu.Run();
 
-            //Stopwatch stopWatch = new Stopwatch();
-            //stopWatch.Start();
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
 
             switch (selected)
             {
@@ -102,14 +104,23 @@ namespace The_Game_Client.Utility
                     break;
                 case 3:
                     Console.Clear();
-                    await RunMainMenuAsync();
+                    stopWatch.Stop();
+                    TimeSpan timeSpan = stopWatch.Elapsed;
+                    TimeSpan ts = TimeSpan.Parse(stat.TimeInGame);
+                    stat.TimeInGame = ts.Add(timeSpan).ToString();
+                    await PostStatsAsync(stat);
+
+                    //await RunGameMenuAsync();
+                    //await RunMainMenuAsync();
                     break;
             }
 
 
             //stopWatch.Stop();
             //TimeSpan ts = stopWatch.Elapsed;
-            
+            //stat.TimeInGame.Add(ts);
+            //await PostStatsAsync(stat);
+
             await RunGameMenuAsync();
         }
 
@@ -137,6 +148,14 @@ namespace The_Game_Client.Utility
             {
                 User = user;
                 auth.User = user;
+                stat = JsonConvert.DeserializeObject<PlayerPersonalStat>(await GetStatsAsync(user));
+                if (stat == null) stat = new PlayerPersonalStat()
+                {
+                    Login = user.Login,
+                    TimeInGame = "00:00:00",
+                    WinRate = 0,
+                    ChangesWinrate = new Dictionary<DateTime, float>()
+                };
                 await RunGameMenuAsync();
             }
 
@@ -167,6 +186,18 @@ namespace The_Game_Client.Utility
 
         }
 
+        public async Task<string> GetStatsAsync(User user)
+        {
+            var response = await client.GetAsync($"/api/PersonalPlayersStat/{user.Login}");
+            return await response.Content.ReadAsStringAsync();
+        }
+
+        public async Task PostStatsAsync(PlayerPersonalStat stat)
+        {
+
+            var content = new StringContent(JsonConvert.SerializeObject(stat), Encoding.UTF8, "application/json");
+            var response = await client.PostAsync($"/api/PersonalPlayersStat", content);
+        }
         public async Task LeaderBoardAsync(Auth auth)
         {
             var response = await client.GetAsync("/api/LeaderBoard");
