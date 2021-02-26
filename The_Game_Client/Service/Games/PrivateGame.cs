@@ -70,6 +70,10 @@ namespace The_Game_Client.Utility
                 timer.StartTimer();
                 while (true)
                 {
+                    if (timer.inGoing == "Exit")
+                    {
+                        return false;
+                    }
                     response = await auth.client.GetAsync($"{controller}/{login}/{guid}");
 
                     if (response.StatusCode == HttpStatusCode.OK) { break; }
