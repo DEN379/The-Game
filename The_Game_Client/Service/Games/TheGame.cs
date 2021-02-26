@@ -33,21 +33,23 @@ namespace The_Game_Client.Utility
                 if (timer.inGoing == "Exit")
                 {
                     command = Commands.Exit;
-                    isRunning = await gameProcess.PostFigureAsync(controller, secondary, command,timer);
+                    await gameProcess.PostFigureAsync(controller, secondary, command,timer);
                     return;
                 }
                 int result = randomGameMenu.Run();
-                Console.WriteLine(result);
 
                 switch (result)
                 {
                     case 0:
+                        gameProcess.auth.Stat.RockCount++;
                         command = Commands.Stone;
                         break;
                     case 1:
+                        gameProcess.auth.Stat.ScissorsCount++;
                         command = Commands.Scissors;
                         break;
                     case 2:
+                        gameProcess.auth.Stat.PaperCount++;
                         command = Commands.Paper;
                         break;
                     default:

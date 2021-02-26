@@ -34,7 +34,6 @@ namespace The_Game_Client.Service.Games
             {
                 var content = await response.Content.ReadAsStringAsync();
                 var guid = content.Trim('"');
-                //Guid = guid;
                 await FindRoomAsync(controller, guid);
                 return guid;
             }
@@ -48,7 +47,7 @@ namespace The_Game_Client.Service.Games
                 Console.Write(".");
                 var responseToStart = await auth.client.GetAsync($"{controller}/{guid}");
 
-                if (responseToStart.StatusCode == HttpStatusCode.OK) { Console.WriteLine("Es"); break; }
+                if (responseToStart.StatusCode == HttpStatusCode.OK) {  break; }
                 await Task.Delay(2000);
             }
         }

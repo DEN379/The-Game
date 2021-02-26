@@ -11,7 +11,7 @@ namespace The_Game_Client.Utility
 {
     class GameProcess
     {
-        private readonly Authentification auth;
+        public Authentification auth;
 
         public GameProcess(Authentification auth)
         {
@@ -27,12 +27,8 @@ namespace The_Game_Client.Utility
                 Password = auth.AuthUser.Password,
                 Command = commands
             };
-            Console.WriteLine($"/{firstRequest}/{auth.Guid}");
             var responseForGame = await postRequest.ExecuteAsync<Player>(player, $"/{firstRequest}/{auth.Guid}");
 
-            Console.WriteLine(player.Command);
-            Console.WriteLine(auth.Guid);
-            Console.WriteLine(responseForGame.StatusCode);
 
             if (commands == Commands.Exit)
             {
@@ -40,40 +36,42 @@ namespace The_Game_Client.Utility
                 return false;
             }
 
+            Console.Write("\nWaiting for the oponent\n");
             while (true)
             {
+                
                 if (timer.inGoing == "Exit")
                 {
                     await auth.client.GetAsync($"/{firstRequest}/{secondRequest}/{auth.Guid}");
                     return false;
                 }
-                Console.WriteLine($"/{firstRequest}/{secondRequest}/{auth.Guid}");
                 var response = await auth.client.GetAsync($"/{firstRequest}/{secondRequest}/{auth.Guid}");
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     var result = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine("rez " + result);
                     if (result.Equals("Draw"))
                     {
+                        auth.Stat.Draws++;
                         Console.WriteLine("Draw");
                     }
                     else if (result.Equals(auth.AuthUser.Login))
                     {
+                        auth.Stat.Wins++;
                         Console.WriteLine("You won!");
                     }
                     else if (result.Equals("Exit")) return false;
                     else
                     {
+                        auth.Stat.Loses++;
                         Console.WriteLine("You loose :(");
                     }
                     Console.ReadKey();
                     return true;
-
-                    //await PrintGameResultAsync(response);
                 }
                 else
                 {
-                    Console.WriteLine(response.StatusCode);
+                    //Console.WriteLine(response.StatusCode);
+                    //Console.Write(".");
                 }
             }
         }
