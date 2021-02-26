@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
+using The_Game_Client.Service;
 using The_Game_Client.Service.Games;
 
 namespace The_Game_Client.Utility
@@ -32,6 +33,7 @@ namespace The_Game_Client.Utility
 
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
+            PersonalStatistic ps = new PersonalStatistic(auth);
 
             switch (selected)
             {
@@ -52,11 +54,11 @@ namespace The_Game_Client.Utility
                     break;
                 case 3:
                     Console.Clear();
-                    //stopWatch.Stop();
-                    //TimeSpan timeSpan = stopWatch.Elapsed;
-                    //TimeSpan ts = TimeSpan.Parse(stat.TimeInGame);
-                    //stat.TimeInGame = ts.Add(timeSpan).ToString();
-                    //await PostStatsAsync(stat);
+                    stopWatch.Stop();
+                    TimeSpan timeSpan = stopWatch.Elapsed;
+                    TimeSpan ts = TimeSpan.Parse(auth.Stat.TimeInGame);
+                    auth.Stat.TimeInGame = ts.Add(timeSpan).ToString();
+                    await ps.PostStatsAsync(auth.Stat);
                     return;
                     //await RunGameMenuAsync();
                     //await RunMainMenuAsync();
