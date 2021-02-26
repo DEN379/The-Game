@@ -16,11 +16,11 @@ namespace The_Game.Controllers
         private readonly ILogger _logger;
         private readonly PlayRoomStorage _playRooms;
         private readonly PlaySessinRoomStorage _sessionPlayRooms;
-        private readonly RoomStorage _session;
+        private readonly RoomStorageSession _session;
         private readonly LeaderboardStorage _leaderBoard; 
         private readonly JsonWorker<Leaderboard> _jsonUpdaterLeaderBoard;
         
-        public PrivatePlayController(RoomStorage rooms, ILogger<PrivatePlayController> logger, PlayRoomStorage playRooms, PlaySessinRoomStorage sessionPlayRooms, RoomStorage session, LeaderboardStorage leaderBoard, JsonWorker<Leaderboard> jsonUpdaterLeaderBoard)
+        public PrivatePlayController(RoomStorage rooms, ILogger<PrivatePlayController> logger, PlayRoomStorage playRooms, PlaySessinRoomStorage sessionPlayRooms, RoomStorageSession session, LeaderboardStorage leaderBoard, JsonWorker<Leaderboard> jsonUpdaterLeaderBoard)
         {
             _rooms = rooms;
             _logger = logger;
