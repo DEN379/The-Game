@@ -41,6 +41,7 @@ namespace The_Game
             services.AddTransient<JsonWorker<PlayerPersonalStat>>();
             services.AddSingleton<StorageOfPersonalStat>();
             services.AddScoped<JsonWorker<Leaderboard>>();
+            services.AddSingleton<RoomStorageSession>();
             services.AddControllers();
         }
         
