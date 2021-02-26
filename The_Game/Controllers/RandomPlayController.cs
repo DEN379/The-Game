@@ -43,7 +43,7 @@ namespace The_Game.Controllers
             {
                 var newRoom = new Room()
                 {
-                    Guid = Guid.NewGuid(),
+                    Guid = room.Key,
                     Player1 = login,
                     Player2 = null
                 };
@@ -120,13 +120,16 @@ namespace The_Game.Controllers
             if (room.FirstPlayer == null)
             {
                 await _sessionPlayRooms.DeleteAsync(linkOfGuid);
+                await _playRooms.DeleteAsync(linkOfGuid);
+                await _rooms.DeleteAsync(linkOfGuid);
+                _jsonUpdaterLeaderBoard.UpdateFile("Leaderboard.json", _leaderBoard.GetDictionary());
                 return "Exit";
             }
             var game = new GameProcess(room.FirstPlayer, room.SecondPlayer);
             var winner = await game.PlayersPlay();
             if (winner.Value == "Exit")
             {
-                _jsonUpdaterLeaderBoard.UpdateFile("Leaderboard.json", _leaderBoard.GetDictionary());
+                
                 room.FirstPlayer = null;
                 return "Exit";
             }
