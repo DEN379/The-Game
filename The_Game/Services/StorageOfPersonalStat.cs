@@ -17,7 +17,14 @@ namespace The_Game.Services
         public void UpdateStat(PlayerPersonalStat stat)
         {
             var newStat = DataBase.FirstOrDefault(x => x.Value.Login == stat.Login);
-            AddOrUpdateAsync(newStat.Key, stat);
+            if (newStat.Value == null)
+            {
+                AddAsync(stat);
+                return;
+            }
+
+            AddOrUpdateAsync(newStat.Key, newStat.Value);
+
         }
 
         public Task UpdateStatAsync(PlayerPersonalStat stat)

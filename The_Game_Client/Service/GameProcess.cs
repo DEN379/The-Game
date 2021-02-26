@@ -56,17 +56,21 @@ namespace The_Game_Client.Utility
                     if (result.Equals("Draw"))
                     {
                         Console.WriteLine("Draw");
+                        auth.Stat.Draws++;
                     }
                     else if (result.Equals(auth.AuthUser.Login))
                     {
                         Console.WriteLine("You won!");
+                        auth.Stat.Wins++;
                     }
                     else if (result.Equals("Exit")) return false;
                     else
                     {
                         Console.WriteLine("You loose :(");
+                        auth.Stat.Loses++;
                     }
                     Console.ReadKey();
+                    timer.TimerDispose();
                     return true;
 
                     //await PrintGameResultAsync(response);
