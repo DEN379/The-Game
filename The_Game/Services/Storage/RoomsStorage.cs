@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
-namespace The_Game.Models
+namespace The_Game.Services.Storage
 {
    
     public abstract class RoomsStorage<T> : Storage<T> where T : class
     {
-        protected new ConcurrentDictionary<Guid, T> DataBase = new ConcurrentDictionary<Guid, T>();
-
-        
+        public new ConcurrentDictionary<Guid, T> DataBase = new ConcurrentDictionary<Guid, T>();
 
         public async Task<T> Get(Guid key)
         {
@@ -53,6 +49,16 @@ namespace The_Game.Models
         public Task<bool> DeleteAsync(Guid key)
         {
             return Task.FromResult(Delete(key));
+        }
+
+        public void AddWithGuid(Guid key, T item)
+        {
+            DataBase.TryAdd(key, item);
+        }
+        public Task AddWithGuidAsync(Guid key, T item)
+        {
+            AddWithGuid(key, item);
+            return Task.CompletedTask;
         }
     }
 }

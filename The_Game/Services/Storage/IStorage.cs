@@ -1,8 +1,9 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using The_Game.Models;
 
-namespace The_Game.Models
+namespace The_Game.Services.Storage
 {
     public interface IStorage<T>
     {

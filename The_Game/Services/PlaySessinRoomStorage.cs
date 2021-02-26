@@ -3,7 +3,8 @@ using The_Game.Services.Storage;
 
 namespace The_Game.Services
 {
-    public class PlayRoomStorage : RoomsStorage<PlayRoom>
+    public class PlaySessinRoomStorage : RoomsStorage<PlayRoom>
     {
+        
     }
 }

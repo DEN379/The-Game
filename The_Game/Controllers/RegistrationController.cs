@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Text.Json;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using The_Game.Classes;
-using System.IO;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
-using The_Game.Interfaces;
+using The_Game.Models;
 using The_Game.Services;
 
 namespace The_Game.Controllers
@@ -37,6 +29,7 @@ namespace The_Game.Controllers
         {
             if (_users.FindUser(user))
             {
+                _logger.LogInformation($"Some one try to register with registered login {user.Login}");
                 return BadRequest();
             }
             await _users.AddAsync(user);
@@ -46,6 +39,7 @@ namespace The_Game.Controllers
             });
             _readLeaderboard.UpdateFile("Leaderboard.json",_leaderboard.GetDictionary());
             _readUsers.UpdateFile("Users.json", _users.GetDictionary());
+            _logger.LogInformation($"Registered new user {user.Login}");
             return Ok();
 
         }

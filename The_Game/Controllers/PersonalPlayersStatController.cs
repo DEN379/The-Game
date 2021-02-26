@@ -1,10 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using The_Game.Models;
 using The_Game.Services;
 
@@ -16,45 +13,31 @@ namespace The_Game.Controllers
     {
         private readonly JsonWorker<PlayerPersonalStat> _jsonPlayerWorker;
         private readonly StorageOfPersonalStat _personalStatStorage;
-        public PersonalPlayersStatController(StorageOfPersonalStat personalStatStorage, JsonWorker<PlayerPersonalStat> jsonPlayerWorker)
+        private ILogger _logger;
+        public PersonalPlayersStatController(StorageOfPersonalStat personalStatStorage, JsonWorker<PlayerPersonalStat> jsonPlayerWorker, ILogger<PersonalPlayersStatController> logger)
         {
             _personalStatStorage = personalStatStorage;
             _jsonPlayerWorker = jsonPlayerWorker;
+            _logger = logger;
         }
 
         [HttpGet("{playerLogin}")]
         public ActionResult<PlayerPersonalStat> GetPersonalStat(string playerLogin)
         {
-
+            
             return _personalStatStorage.GetDictionary().FirstOrDefault(x => x.Value.Login == playerLogin).Value;
 
         }
 
         [HttpPost]
         public  async  Task<IActionResult> PostPersonalStat(PlayerPersonalStat playerStat)
-        {
-            await _personalStatStorage.AddAsync(playerStat);
+        { 
+            await _personalStatStorage.UpdateStatAsync(playerStat);
+            _logger.LogInformation($"stat is update for player {playerStat} ");
             _jsonPlayerWorker.UpdateFile("PlayerPersonalStat.json",_personalStatStorage.GetDictionary());
             return Ok();
         }
 
-        /*
-         *playerStatClass
-         *----------- Login
-         * -----------Create Class playerStatClass
-         * decimal previusWinrate
-         * {
-         *Loaded data
-        }
-
-         *
-         * ----------Loading client this stat 
-         *
-         *play
-         *playerStatClass. wins ++ ;
-         *-----------------------------------
-         *
-         *
-         */
+        
     }
 }

@@ -22,13 +22,15 @@ namespace The_Game
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                }).ConfigureLogging(loggingBuilder =>
-                {
-                    loggingBuilder.ClearProviders();
-                    loggingBuilder.AddSerilog(new LoggerConfiguration()
-                        .WriteTo.Console()
-                        .WriteTo.File("log.log")
-                        .CreateLogger());
+                    //}).ConfigureLogging(loggingBuilder =>
+                    //{
+                    //    loggingBuilder.ClearProviders();
+                    //    loggingBuilder.AddSerilog(new LoggerConfiguration()
+                    //        .WriteTo.Console()
+                    //        .WriteTo.File("log.log")
+                    //        .CreateLogger());
+                    //});
                 });
     }
 }
+
