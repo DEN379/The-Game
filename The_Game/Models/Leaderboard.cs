@@ -1,4 +1,4 @@
-﻿namespace The_Game.Services
+﻿namespace The_Game.Models
 {
     public class Leaderboard
     {

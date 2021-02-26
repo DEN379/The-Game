@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using The_Game.Models;
 using The_Game.Services;
+using The_Game.Services.GameProcess;
 
 namespace The_Game.Controllers
 {
@@ -38,6 +39,8 @@ namespace The_Game.Controllers
         [HttpGet("create/{login}")]
         public async  Task<ActionResult<Guid>> StartGame(string login)
         {
+            _logger.LogInformation($"{login} try to find a room for random play ");
+
             var room = _rooms.TakeLastRoom();
             if(room.Value==null)
             {
@@ -48,12 +51,14 @@ namespace The_Game.Controllers
                     Player2 = null
                 };
                 await _rooms.AddAsync(newRoom);
+                _logger.LogInformation($"new room created by {login} he is waiting for player ");
                 return newRoom.Guid;
             }
 
             room.Value.Player2 = login;
            await _session.AddWithGuidAsync(room.Value.Guid,room.Value);
-            
+           _logger.LogInformation($" {login} joined to {room.Value.Player1} , and they created a session ");
+
             await _rooms.DeleteAsync(room.Key);
             return room.Value.Guid;
 
@@ -65,6 +70,7 @@ namespace The_Game.Controllers
             var room = await _session.Get(linkOfGuid);
             if (room == null)
             {
+
                 return NotFound();
             }
             else
@@ -76,10 +82,11 @@ namespace The_Game.Controllers
         [HttpPost("{linkOfGuid}")]
         public async Task<IActionResult> PlayGameAsync(Guid linkOfGuid,Player player)
         {
-          
-           await _sessionPlayRooms.DeleteAsync(linkOfGuid);
+            _logger.LogInformation($"room with id {linkOfGuid} start there game");
+            await _sessionPlayRooms.DeleteAsync(linkOfGuid);
             
             var room = await _playRooms.Get(linkOfGuid);
+            
             if (room== null)
             {
                 var newPlayRoom = new PlayRoom()
@@ -89,6 +96,7 @@ namespace The_Game.Controllers
                 };
                 //
                 await _playRooms.AddWithGuidAsync(linkOfGuid, newPlayRoom);
+                _logger.LogInformation($"{player.Login} make his turn, he put {player.Command}");
                 return Ok();
             }
 
@@ -96,6 +104,8 @@ namespace The_Game.Controllers
             await _playRooms.DeleteAsync(linkOfGuid);
 
             await _sessionPlayRooms.AddWithGuidAsync(linkOfGuid, room);
+
+            _logger.LogInformation($"{player.Login} make his turn, he put {player.Command}");
             return Ok();
 
             
@@ -103,24 +113,34 @@ namespace The_Game.Controllers
         [HttpGet("game/{linkOfGuid}")]
         public async Task<ActionResult<string>> WaitingEnemy(Guid linkOfGuid)
         {
-           
-           var room = await _sessionPlayRooms.Get(linkOfGuid);
+
+            var room = await _sessionPlayRooms.Get(linkOfGuid);
             if (room == null)
             {
                 return NotFound();
             }
-            var game = new GameProcess(room.FirstPlayer,room.SecondPlayer);
+
+            if (room.FirstPlayer == null)
+            {
+                await _sessionPlayRooms.DeleteAsync(linkOfGuid);
+                return "Exit";
+            }
+            var game = new GameProcess(room.FirstPlayer, room.SecondPlayer);
             var winner = await game.PlayersPlay();
             if (winner.Value == "Exit")
             {
-                _jsonUpdaterLeaderBoard.UpdateFile("Leaderboard.json",_leaderBoard.GetDictionary());
+                _jsonUpdaterLeaderBoard.UpdateFile("Leaderboard.json", _leaderBoard.GetDictionary());
+                room.FirstPlayer = null;
                 return "Exit";
             }
 
+            _logger.LogInformation($"{winner.Value} Win");
+
             if (winner.Value == room.FirstPlayer.Login)
             {
-               await _leaderBoard.AddWins(room.FirstPlayer.Login);
-               await _leaderBoard.AddLoses(room.SecondPlayer.Login);
+                
+                await _leaderBoard.AddWins(room.FirstPlayer.Login);
+                await _leaderBoard.AddLoses(room.SecondPlayer.Login);
             }
             else if (winner.Value == room.SecondPlayer.Login)
             {

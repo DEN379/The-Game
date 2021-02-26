@@ -16,8 +16,6 @@ namespace The_Game.Controllers
     public class LoginController : Controller
     {
         
-        
-            private readonly JsonWorker<User> _readUsers = new JsonWorker<User>();
             private readonly UserStorage _users;
             private readonly ILogger<LoginController> _logger;
 
@@ -29,13 +27,14 @@ namespace The_Game.Controllers
             }
 
             [HttpPost]
-            public async Task<IActionResult> LoginUser(User user)
+            public  IActionResult LoginUser(User user)
             {
                 if (_users.FindUser(user))
                 {
+                    _logger.LogInformation($"User {user.Login} join ");
                     return Ok();
                 }
-
+                
                 return BadRequest();
 
             }

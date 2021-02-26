@@ -1,6 +1,4 @@
-﻿using The_Game.Interfaces;
-
-namespace The_Game.Classes
+﻿namespace The_Game.Models.User
 {
     public class User:IUser
     {

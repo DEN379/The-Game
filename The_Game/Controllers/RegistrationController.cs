@@ -11,6 +11,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using The_Game.Interfaces;
+using The_Game.Models;
 using The_Game.Services;
 
 namespace The_Game.Controllers

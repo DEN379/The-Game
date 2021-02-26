@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using The_Game.Models;
 using The_Game.Services;
+using The_Game.Services.GameProcess;
 
 namespace The_Game.Controllers
 {
@@ -38,7 +39,7 @@ namespace The_Game.Controllers
         [HttpGet("create/{login}")]
         public ActionResult<Guid> StartGame(string login)
         {
-            
+            _logger.LogInformation($"{login} want to create a room ");
             var newRoom = new Room()
             {
                 Guid = Guid.NewGuid(),
@@ -47,6 +48,7 @@ namespace The_Game.Controllers
             };
 
             _rooms.AddAsync(newRoom);
+            _logger.LogInformation($"{login}  created  room ");
             return newRoom.Guid;
                 
 
@@ -75,19 +77,20 @@ namespace The_Game.Controllers
             
             newSessionRoom.Player2 = login;
             await _session.AddWithGuidAsync(newSessionRoom.Guid, newSessionRoom);
-           
+
+            _logger.LogInformation($"{login} join into private game with {linkOfGuid}");
             return Ok();
             
             
         }
 
-        [HttpPost("{linkOfGuid}")]
         public async Task<IActionResult> PlayGameAsync(Guid linkOfGuid, Player player)
         {
-            
+            _logger.LogInformation($"room with id {linkOfGuid} start there game");
             await _sessionPlayRooms.DeleteAsync(linkOfGuid);
-            
+
             var room = await _playRooms.Get(linkOfGuid);
+
             if (room == null)
             {
                 var newPlayRoom = new PlayRoom()
@@ -95,38 +98,51 @@ namespace The_Game.Controllers
                     FirstPlayer = player,
                     SecondPlayer = null
                 };
-                
+                //
                 await _playRooms.AddWithGuidAsync(linkOfGuid, newPlayRoom);
+                _logger.LogInformation($"{player.Login} make his turn, he put {player.Command}");
                 return Ok();
             }
 
             room.SecondPlayer = player;
             await _playRooms.DeleteAsync(linkOfGuid);
-            
+
             await _sessionPlayRooms.AddWithGuidAsync(linkOfGuid, room);
+
+            _logger.LogInformation($"{player.Login} make his turn, he put {player.Command}");
             return Ok();
 
-           
+
         }
         [HttpGet("game/{linkOfGuid}")]
         public async Task<ActionResult<string>> WaitingEnemy(Guid linkOfGuid)
         {
-            
+
             var room = await _sessionPlayRooms.Get(linkOfGuid);
             if (room == null)
             {
                 return NotFound();
+            }
+
+            if (room.FirstPlayer == null)
+            {
+                await _sessionPlayRooms.DeleteAsync(linkOfGuid);
+                return "Exit";
             }
             var game = new GameProcess(room.FirstPlayer, room.SecondPlayer);
             var winner = await game.PlayersPlay();
             if (winner.Value == "Exit")
             {
                 _jsonUpdaterLeaderBoard.UpdateFile("Leaderboard.json", _leaderBoard.GetDictionary());
+                room.FirstPlayer = null;
                 return "Exit";
             }
 
+            _logger.LogInformation($"{winner.Value} Win");
+
             if (winner.Value == room.FirstPlayer.Login)
             {
+
                 await _leaderBoard.AddWins(room.FirstPlayer.Login);
                 await _leaderBoard.AddLoses(room.SecondPlayer.Login);
             }
