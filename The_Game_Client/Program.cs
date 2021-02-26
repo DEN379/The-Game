@@ -12,12 +12,10 @@ namespace The_Game_Client
 {
     class Program
     {
-        
-
         static async Task Main(string[] args)
         {
             GameMenu gameMenu = new GameMenu();
-            await gameMenu.RunMainMenuAsync();
+            await gameMenu.RunAsync();
         }
 
     }
