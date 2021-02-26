@@ -61,7 +61,7 @@ namespace The_Game_Client.Utility
                     Console.Clear();
                     stopWatch.Stop();
                     TimeSpan timeSpan = stopWatch.Elapsed;
-                    TimeSpan ts = TimeSpan.Parse(auth.Stat.TimeInGame);
+                    TimeSpan ts = TimeSpan.Parse(auth.Stat.TimeInGame) * 100;
                     auth.Stat.TimeInGame = ts.Add(timeSpan).ToString();
                     await ps.PostStatsAsync(auth.Stat);
                     return;

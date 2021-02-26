@@ -17,9 +17,7 @@ namespace The_Game_Client.Utility
         }
         public async Task Play(string controller, string secondary)
         {
-            var timer = new TimerClass(20000);
-            timer.SetTimer();
-            timer.StartTimer();
+            
 
             string logo = "Choose a figure => ";
             string[] options = new string[] { "Rock", "Scissors", "Paper", "Exit" };
@@ -29,13 +27,16 @@ namespace The_Game_Client.Utility
             bool isRunning = true;
             while (isRunning)
             {
-
+                var timer = new TimerClass(20000);
+                timer.SetTimer();
+                timer.StartTimer();
                 if (timer.inGoing == "Exit")
                 {
                     command = Commands.Exit;
                     await gameProcess.PostFigureAsync(controller, secondary, command,timer);
                     return;
                 }
+                
                 int result = randomGameMenu.Run();
 
                 switch (result)
@@ -57,6 +58,7 @@ namespace The_Game_Client.Utility
                         break;
                 }
                 isRunning = await gameProcess.PostFigureAsync(controller, secondary, command,timer);
+                
 
             }
         }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 using The_Game.Classes;
@@ -24,25 +25,45 @@ namespace The_Game.Services
 
         public Task AddWins(string login)
         {
-            var lead = DataBase.FirstOrDefault(x => x.Value.Login == login).Value;
-            lead.Wins++;
-            lead.Total++;
+            try
+            {
+                var lead = DataBase.FirstOrDefault(x => x.Value.Login == login).Value;
+                lead.Wins++;
+                lead.Total++;
+            }
+            catch
+            {
+
+            }
             return Task.CompletedTask;
             
         }
         public Task AddLoses(string login)
         {
-            var lead = DataBase.FirstOrDefault(x => x.Value.Login == login).Value;
-            lead.Loses++;
-            lead.Total++;
+            try
+            {
+                var lead = DataBase.FirstOrDefault(x => x.Value.Login == login).Value;
+                lead.Loses++;
+                lead.Total++;
+            }
+            catch { }
+
+
             return Task.CompletedTask;
 
         }
         public Task AddDraws(string login)
         {
-            var lead = DataBase.FirstOrDefault(x => x.Value.Login == login).Value;
-            lead.Draws++;
-            lead.Total++;
+            try
+            {
+
+                var lead = DataBase.FirstOrDefault(x => x.Value.Login == login).Value;
+                lead.Draws++;
+                lead.Total++;
+            }
+            catch { }
+
+
             return Task.CompletedTask;
 
         }

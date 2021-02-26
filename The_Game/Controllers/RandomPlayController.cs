@@ -18,11 +18,11 @@ namespace The_Game.Controllers
         private readonly JsonWorker<Leaderboard> _jsonUpdaterLeaderBoard;
         private readonly PlayRoomStorage _playRooms;
         private readonly PlaySessinRoomStorage _sessionPlayRooms;
-        private readonly RoomStorage _session;
+        private readonly RoomStorageSession _session;
 
         
 
-        public RandomPlayController(RoomStorage rooms, ILogger<RandomPlayController> logger, LeaderboardStorage leaderBoard, RoomStorage session, PlaySessinRoomStorage sessionplayRooms, PlayRoomStorage playRooms, JsonWorker<Leaderboard> jsonUpdaterLeaderBoard)
+        public RandomPlayController(RoomStorage rooms, ILogger<RandomPlayController> logger, LeaderboardStorage leaderBoard, RoomStorageSession session, PlaySessinRoomStorage sessionplayRooms, PlayRoomStorage playRooms, JsonWorker<Leaderboard> jsonUpdaterLeaderBoard)
         {
             _rooms = rooms;
             _logger = logger;
@@ -43,11 +43,11 @@ namespace The_Game.Controllers
             {
                 var newRoom = new Room()
                 {
-                    Guid = room.Key,
+                    Guid = Guid.NewGuid(),
                     Player1 = login,
                     Player2 = null
                 };
-                await _rooms.AddAsync(newRoom);
+                await _rooms.AddWithGuidAsync(newRoom.Guid,newRoom);
                 _logger.LogInformation($"new room created by {login} he is waiting for player ");
                 return newRoom.Guid;
             }
