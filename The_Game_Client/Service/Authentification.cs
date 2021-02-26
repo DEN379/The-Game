@@ -15,6 +15,7 @@ namespace The_Game_Client.Utility
 
         public string Guid { get; set; }
         public HttpClient client { get; set; }
+        public PlayerPersonalStat Stat { get; set; }
 
         public int CountOfBadLogin { get; set; } = 0;
 

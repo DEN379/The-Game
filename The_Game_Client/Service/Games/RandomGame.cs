@@ -42,8 +42,10 @@ namespace The_Game_Client.Service.Games
         }
         public async Task FindRoomAsync(string controller, string guid)
         {
+            Console.Write("Waiting");
             while (true)
             {
+                Console.Write(".");
                 var responseToStart = await auth.client.GetAsync($"{controller}/{guid}");
 
                 if (responseToStart.StatusCode == HttpStatusCode.OK) { Console.WriteLine("Es"); break; }

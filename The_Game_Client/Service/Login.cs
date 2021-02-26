@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using The_Game_Client.Model;
+using The_Game_Client.Service;
 
 namespace The_Game_Client.Utility
 {
     class Login
     {
-        PlayerPersonalStat stat;
+        private PlayerPersonalStat stat;
         Authentification auth;
         public Login(Authentification auth)
         {
@@ -38,15 +39,17 @@ namespace The_Game_Client.Utility
             if (isSuccess)
             {
                 auth.AuthUser = user;
-                //stat = JsonConvert.DeserializeObject<PlayerPersonalStat>(await GetStatsAsync(user));
-                //if (stat == null) stat = new PlayerPersonalStat()
-                //{
-                //    Login = user.Login,
-                //    TimeInGame = "00:00:00",
-                //    WinRate = 0,
-                //    ChangesWinrate = new Dictionary<DateTime, float>()
-                //};
-
+                PersonalStatistic personalStatistic = new PersonalStatistic(auth);
+                var stats = await personalStatistic.GetStatsAsync(user);
+                stat = JsonConvert.DeserializeObject<PlayerPersonalStat>(stats);
+                if (stat == null) stat = new PlayerPersonalStat()
+                {
+                    Login = user.Login,
+                    TimeInGame = "00:00:00",
+                    WinRate = 0,
+                    ChangesWinrate = new Dictionary<DateTime, float>()
+                };
+                auth.Stat = stat;
                 //await RunGameMenuAsync();
                 return auth;
             }
