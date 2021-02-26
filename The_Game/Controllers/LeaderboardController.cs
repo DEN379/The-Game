@@ -21,15 +21,15 @@ namespace The_Game.Controllers
         public ActionResult<string> ShowLeaderBoard()
         {
             _logger.LogInformation("Someone asked to take leaderboard");
-            string board = "PlayerLogin : Wins : Losses : Draws : Total \n";
-            var arrayOfLeaders = _leaderboard.GetDictionary().Select(x => x.Value).Where(x => x.Total >= 10).ToArray();
+            string board = "PlayerLogin:\tWins     \tLosses   \tDraws   \tTotal\n";
+            var arrayOfLeaders = _leaderboard.GetDictionary().Select(x => x.Value).Where(x => x.Total >= 10).OrderByDescending(x=>x.Wins).ToArray();
             if (arrayOfLeaders.Length <= 0)
             {
                 return "No leaders yet, you can be the first";
             }
             foreach (var item in arrayOfLeaders)
             {
-                board += $"{item.Login} : {item.Wins} : {item.Loses} : {item.Draws} : {item.Total}\n";
+                board += $"{item.Login}\t\t{item.Wins}\t\t{item.Loses}\t\t{item.Draws}\t\t{item.Total}\n";
             }
             _logger.LogInformation(" Leaderboard is shown ");
 
