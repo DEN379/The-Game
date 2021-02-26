@@ -11,8 +11,14 @@ namespace The_Game_Client.Model
         public int Wins { get; set; }
         public int Loses { get; set; }
         public int Draws { get; set; } 
-        public float WinRate {
-            get => (float)1.0 / (Wins + Loses + Draws) * 100 ;  }
+        public float WinRate 
+        {
+            get 
+            {
+                if ((Wins + Loses + Draws) == 0) return 0;
+                return (float)Wins / (Wins + Loses + Draws) * 100;
+            }  
+        }
         public int ScissorsCount { get; set; }
         public int RockCount { get; set; }
         public int PaperCount { get; set; }
@@ -22,9 +28,9 @@ namespace The_Game_Client.Model
 
         public override string ToString()
         {
-            return "\n\tWins\tLosses\tDraws\tTotal\tWir Rate\tRock" +
+            return "\n\tWins\tLosses\tDraws\tTotal\tWin Rate\tRock" +
                 "\tScissors\tPaper\tTime in game\n" +
-                $"\t{Wins}\t{Loses}\t{Draws}\t{Wins + Loses + Draws}\t{WinRate}%\t{RockCount}\t" +
+                $"\t{Wins}\t{Loses}\t{Draws}\t{Wins + Loses + Draws}\t{WinRate}%\t\t{RockCount}" +
                 $"\t{ScissorsCount}\t{PaperCount}\t{TimeInGame}\n";
 
         }
