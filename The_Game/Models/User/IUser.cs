@@ -1,4 +1,4 @@
-﻿namespace The_Game.Models.User
+﻿namespace The_Game.Interfaces
 {
     public interface IUser
     {
