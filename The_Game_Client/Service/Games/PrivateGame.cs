@@ -55,7 +55,6 @@ namespace The_Game_Client.Utility
 
         public async Task<bool> GetCreateAsync(string controller, string secondary, string login)
         {
-            Console.WriteLine(controller + secondary + login);
             var response = await auth.client.GetAsync(controller + secondary + login);
 
             if (response.StatusCode == HttpStatusCode.OK)
@@ -71,16 +70,9 @@ namespace The_Game_Client.Utility
                 timer.StartTimer();
                 while (true)
                 {
-                    if (timer.inGoing == "Exit")
-                    {
-                        Console.WriteLine();
-                        Console.WriteLine("We cant find a room for you, sorry try latter )");
-                        return false;
-                    }
-                    Console.WriteLine($"{controller}/{login}/{guid}");
                     response = await auth.client.GetAsync($"{controller}/{login}/{guid}");
 
-                    if (response.StatusCode == HttpStatusCode.OK) { Console.WriteLine("Es"); break; }
+                    if (response.StatusCode == HttpStatusCode.OK) { break; }
                     await Task.Delay(2000);
                 }
 
