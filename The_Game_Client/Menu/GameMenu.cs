@@ -40,18 +40,7 @@ namespace The_Game_Client.Utility
 
 
 
-        //public async Task<string> GetStatsAsync(User user)
-        //{
-        //    var response = await client.GetAsync($"/api/PersonalPlayersStat/{user.Login}");
-        //    return await response.Content.ReadAsStringAsync();
-        //}
-
-        //public async Task PostStatsAsync(PlayerPersonalStat stat)
-        //{
-
-        //    var content = new StringContent(JsonConvert.SerializeObject(stat), Encoding.UTF8, "application/json");
-        //    var response = await client.PostAsync($"/api/PersonalPlayersStat", content);
-        //}
+    
 
         //public async Task ReturnToMainMenuAsync()
         //{

@@ -27,7 +27,8 @@ namespace The_Game_Client.Utility
                                                          
                                                          ";
 
-            string[] options = new string[] { "Random game", "Private game", "Training with bot", "Back" };
+            string[] options = new string[] { "Random game", "Private game", "Training with bot",
+                "Show personal statistic", "Back" };
             Menu gameMenu = new Menu(logo, options);
             int selected = gameMenu.Run();
 
@@ -53,6 +54,10 @@ namespace The_Game_Client.Utility
                     await gameWithBot.BotGame("api/BotPlay");
                     break;
                 case 3:
+                    Console.WriteLine( auth.Stat );
+                    Console.ReadKey();
+                    break;
+                case 4:
                     Console.Clear();
                     stopWatch.Stop();
                     TimeSpan timeSpan = stopWatch.Elapsed;
@@ -60,9 +65,6 @@ namespace The_Game_Client.Utility
                     auth.Stat.TimeInGame = ts.Add(timeSpan).ToString();
                     await ps.PostStatsAsync(auth.Stat);
                     return;
-                    //await RunGameMenuAsync();
-                    //await RunMainMenuAsync();
-                    break;
             }
 
 

@@ -24,19 +24,29 @@ namespace The_Game_Client.Utility
             if (login.Length < 4)
             {
                 Console.WriteLine("\nLogin length mast be more than 4!");
-                //await ReturnToMainMenuAsync();
+                Console.ReadKey();
                 return false;
             }
             if (password.Length < 6)
             {
                 Console.WriteLine("\nPassword length must be 6 or more!");
-                //await ReturnToMainMenuAsync();
+                Console.ReadKey();
                 return false;
             }
 
             User user = new User() { Login = login, Password = password };
 
-            await auth.AuthPostAsync("/registration", user);
+            bool isRegistered = await auth.AuthPostAsync("/registration", user);
+            if (isRegistered)
+            {
+                Console.WriteLine("You successfuly registered");
+            }
+            else
+            {
+                Console.WriteLine("\nYou enterd wrong login or password");
+            }
+            Console.WriteLine("Press any button to go back to main menu");
+            Console.ReadKey();
             return true;
 
         }

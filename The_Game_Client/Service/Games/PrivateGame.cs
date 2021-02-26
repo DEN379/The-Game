@@ -30,7 +30,6 @@ namespace The_Game_Client.Utility
                 case 0:
                     Console.WriteLine("Enter pls your partner's id to enter to lobby: ");
                     string guid = Console.ReadLine().Trim();
-                    Console.WriteLine($"/{controller}", $"/{auth.AuthUser.Login}/{guid}");
 
                     if (isAuth = await GetPrivateAsync($"/{controller}", $"/{auth.AuthUser.Login}/{guid}"))
                     {
@@ -49,8 +48,6 @@ namespace The_Game_Client.Utility
                 TheGame game = new TheGame(gameProcess);
                 await game.Play(controller, secondary);
             }
-            //if (isAuth) await TheGame(controller, secondary);
-
 
         }
 
@@ -89,7 +86,7 @@ namespace The_Game_Client.Utility
             {
                 var responseToStart = await auth.client.GetAsync(controller + request);
 
-                if (responseToStart.StatusCode == HttpStatusCode.OK) { Console.WriteLine("Es"); return true; }
+                if (responseToStart.StatusCode == HttpStatusCode.OK) { return true; }
                 await Task.Delay(2000);
             }
         }

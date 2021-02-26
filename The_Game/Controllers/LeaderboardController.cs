@@ -25,7 +25,7 @@ namespace The_Game.Controllers
             var arrayOfLeaders = _leaderboard.GetDictionary().Select(x => x.Value).Where(x => x.Total >= 10).OrderByDescending(x=>x.Wins).ToArray();
             if (arrayOfLeaders.Length <= 0)
             {
-                return "No leaders yet, you can be the first";
+                return "No leaders yet, you can be the first.\nShowing players with more than 10 games.";
             }
             foreach (var item in arrayOfLeaders)
             {

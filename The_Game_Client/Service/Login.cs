@@ -21,11 +21,8 @@ namespace The_Game_Client.Utility
             if (auth.CountOfBadLogin == 3)
             {
                 Console.WriteLine("You're been blocked for too many try to login");
-                //SetTimer();
-                //await ReturnToMainMenuAsync();
                 return null;
             }
-            //else StopTimer();
             Console.WriteLine("Login: ");
             string login = Console.ReadLine();
 
@@ -46,13 +43,15 @@ namespace The_Game_Client.Utility
                 {
                     Login = user.Login,
                     TimeInGame = "00:00:00",
-                    WinRate = 0,
                     ChangesWinrate = new Dictionary<DateTime, float>()
                 };
                 auth.Stat = stat;
-                //await RunGameMenuAsync();
+                //Console.WriteLine("You successfuly loged in");
                 return auth;
             }
+            Console.WriteLine("\nYou enterd wrong login or password");
+            Console.WriteLine("Press any button to go back to main menu");
+            Console.ReadKey();
             return null;
 
         }
