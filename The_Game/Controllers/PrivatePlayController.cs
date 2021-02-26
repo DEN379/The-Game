@@ -122,6 +122,8 @@ namespace The_Game.Controllers
             if (room.FirstPlayer == null)
             {
                 await _sessionPlayRooms.DeleteAsync(linkOfGuid);
+                await _playRooms.DeleteAsync(linkOfGuid);
+                await _rooms.DeleteAsync(linkOfGuid);
                 return "Exit";
             }
             var game = new GameProcess(room.FirstPlayer, room.SecondPlayer);

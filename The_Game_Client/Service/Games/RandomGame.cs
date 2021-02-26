@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
+using The_Game_Client.Utility;
 
-namespace The_Game_Client.Utility
+namespace The_Game_Client.Service.Games
 {
     class RandomGame
     {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using The_Game.Models;
 using The_Game_Client.Model;
 
@@ -16,8 +17,9 @@ namespace The_Game_Client.Utility
         {
             this.auth = auth;
         }
-        public async Task<bool> PostFigureAsync(string firstRequest, string secondRequest, Commands commands)
+        public async Task<bool> PostFigureAsync(string firstRequest, string secondRequest, Commands commands, TimerClass timer)
         {
+           
             PostRequest postRequest = new PostRequest(auth.client);
             var player = new Player()
             {
@@ -40,6 +42,11 @@ namespace The_Game_Client.Utility
 
             while (true)
             {
+                if (timer.inGoing == "Exit")
+                {
+                    await auth.client.GetAsync($"/{firstRequest}/{secondRequest}/{auth.Guid}");
+                    return false;
+                }
                 Console.WriteLine($"/{firstRequest}/{secondRequest}/{auth.Guid}");
                 var response = await auth.client.GetAsync($"/{firstRequest}/{secondRequest}/{auth.Guid}");
                 if (response.StatusCode == HttpStatusCode.OK)
